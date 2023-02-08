@@ -36,6 +36,7 @@ public class App extends Jooby {
         Logger log = getLog();
 
         mvc(new ExampleController(ds,log));
+        mvc(new BankController(ds, log));
 
         /*
         Finally we register our application lifecycle methods
@@ -69,7 +70,7 @@ public class App extends Jooby {
             stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Monica', 100.00)");
             stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Phoebe', 76.00)");
             stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Joey', 23.90)");
-            stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Chandler', 3.00");
+            stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Chandler', 3.00)");
             stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Ross', 54.32)");
 
 

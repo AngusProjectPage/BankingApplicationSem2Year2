@@ -2,16 +2,20 @@ package uk.co.asepstrath.bank;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.function.BiFunction;
 
 public class Account {
+    private String name;
     private BigDecimal balance;
 
-    Account(){
-        this.balance = new BigDecimal(0);
+    Account(String _name) {
+        this.name = _name;
+        this.balance = BigDecimal.ZERO;
     }
 
-    Account(double amount){
-        this.balance = new BigDecimal(amount);
+    Account(String _name, BigDecimal amount){
+        this.name = _name;
+        this.balance = amount;
     }
 
 
@@ -32,6 +36,11 @@ public class Account {
         else{
             throw new ArithmeticException("Cannot withdraw amount: "+ amount + " From Account.");
         }
+    }
+
+    @Override
+    public String toString() {
+        return name + ": " + balance.toString();
     }
 
 }
