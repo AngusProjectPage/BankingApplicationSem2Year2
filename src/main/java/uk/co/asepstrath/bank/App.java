@@ -1,23 +1,30 @@
 package uk.co.asepstrath.bank;
 
+import kong.unirest.ObjectMapper;
 import uk.co.asepstrath.bank.example.ExampleController;
 import io.jooby.Jooby;
+import io.jooby.json.JacksonModule;
 import io.jooby.handlebars.HandlebarsModule;
 import io.jooby.helper.UniRestExtension;
 import io.jooby.hikari.HikariModule;
 import org.slf4j.Logger;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class App extends Jooby {
+
+    private BankController bc;
 
     {
         /*
         This section is used for setting up the Jooby Framework modules
          */
+        install(new JacksonModule());
         install(new UniRestExtension());
         install(new HandlebarsModule());
         install(new HikariModule("mem"));
@@ -35,14 +42,18 @@ public class App extends Jooby {
         DataSource ds = require(DataSource.class);
         Logger log = getLog();
 
+        BankController bc = new BankController(ds, log);
+
         mvc(new ExampleController(ds,log));
-        mvc(new BankController(ds, log));
+        mvc(bc);
 
         /*
         Finally we register our application lifecycle methods
          */
         onStarted(() -> onStart());
         onStop(() -> onStop());
+
+        get("/", ctx -> bc.getUserData());
     }
 
     public static void main(final String[] args) {

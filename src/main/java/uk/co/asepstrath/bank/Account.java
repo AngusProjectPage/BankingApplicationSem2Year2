@@ -28,6 +28,10 @@ public class Account {
         return this.balance.setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void withdraw(double amount){
         BigDecimal amountBD = new BigDecimal(amount);
         if(amount > 0 && this.balance.compareTo(amountBD) >= 0){

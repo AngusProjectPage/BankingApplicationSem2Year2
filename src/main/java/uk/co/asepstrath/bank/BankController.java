@@ -4,6 +4,7 @@ import io.jooby.ModelAndView;
 import io.jooby.StatusCode;
 import io.jooby.annotations.*;
 import io.jooby.exception.StatusCodeException;
+import io.jooby.json.JacksonModule;
 import kong.unirest.Unirest;
 import org.slf4j.Logger;
 
@@ -18,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-@Path("/bank")
+@Path("/")
 public class BankController {
 
     private final DataSource dataSource;
@@ -32,8 +33,7 @@ public class BankController {
         logger = log;
     }
 
-    @GET
-    public String getUserData() {
+    public ArrayList<Account> getUserData() {
         try (Connection connection = dataSource.getConnection()) {
             // Create Statement (batch of SQL Commands)
             Statement statement = connection.createStatement();
@@ -46,7 +46,7 @@ public class BankController {
                 Accounts.add(a);
             }
             // Return value
-            return Accounts.toString();
+            return Accounts;
         } catch (SQLException e) {
             // If something does go wrong this will log the stack trace
             logger.error("Database Error Occurred",e);
