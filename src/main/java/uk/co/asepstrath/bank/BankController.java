@@ -55,4 +55,11 @@ public class BankController {
         }
     }
 
+    @GET("/view")
+    public ModelAndView account(@QueryParam String name) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("users", getUserData());
+        return new ModelAndView("account.hbs", model);
+    }
+
 }
