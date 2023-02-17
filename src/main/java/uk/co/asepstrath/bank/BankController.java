@@ -1,5 +1,6 @@
 package uk.co.asepstrath.bank;
 
+import com.google.gson.Gson;
 import io.jooby.ModelAndView;
 import io.jooby.StatusCode;
 import io.jooby.annotations.*;
@@ -33,7 +34,7 @@ public class BankController {
         logger = log;
     }
 
-    public ArrayList<Account> getUserData() {
+    private ArrayList<Account> getAccounts() {
         try (Connection connection = dataSource.getConnection()) {
             // Create Statement (batch of SQL Commands)
             Statement statement = connection.createStatement();
@@ -53,6 +54,20 @@ public class BankController {
             // And return a HTTP 500 error to the requester
             throw new StatusCodeException(StatusCode.SERVER_ERROR, "Database Error Occurred");
         }
+    }
+
+    @GET("/api")
+    public String GET_api() {
+        return new Gson().toJson(getAccounts());
+    }
+
+    @GET
+    public ModelAndView viewAccounts() {
+        HashMap hm = new HashMap<String,Object>();
+        String json = GET_api();
+        ArrayList<Account> accs = new Gson().fromJson(json, ArrayList.class);
+        hm.put("accounts",accs);
+        return new ModelAndView("accounts.hbs", hm);
     }
 
 }

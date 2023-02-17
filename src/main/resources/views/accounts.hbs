@@ -1,0 +1,11 @@
+<table> <!-- Create Table -->
+    <tr> <!-- Table Row 1 -->
+        <th>Name</th> <!-- Table Header -->
+        <th>Balance</th>
+    {{#accounts}}
+    <tr> <!-- Table Row X -->
+        <td>{{name}}</td> <!-- Table Cell -->
+        <td>{{balance}}</td>
+    </tr> <!-- End Table Row X -->
+    {{/accounts}}
+</table>
