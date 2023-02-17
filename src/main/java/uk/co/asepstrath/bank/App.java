@@ -1,7 +1,6 @@
 package uk.co.asepstrath.bank;
 
 import io.jooby.Jooby;
-import io.jooby.json.JacksonModule;
 import io.jooby.handlebars.HandlebarsModule;
 import io.jooby.helper.UniRestExtension;
 import io.jooby.hikari.HikariModule;
@@ -18,7 +17,6 @@ public class App extends Jooby {
         /*
         This section is used for setting up the Jooby Framework modules
          */
-        install(new JacksonModule());
         install(new UniRestExtension());
         install(new HandlebarsModule());
         install(new HikariModule("mem"));

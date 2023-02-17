@@ -5,7 +5,6 @@ import io.jooby.ModelAndView;
 import io.jooby.StatusCode;
 import io.jooby.annotations.*;
 import io.jooby.exception.StatusCodeException;
-import io.jooby.json.JacksonModule;
 import kong.unirest.Unirest;
 import org.slf4j.Logger;
 
