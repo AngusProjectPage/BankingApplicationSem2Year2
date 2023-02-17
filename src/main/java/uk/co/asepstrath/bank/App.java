@@ -1,7 +1,5 @@
 package uk.co.asepstrath.bank;
 
-import kong.unirest.ObjectMapper;
-import uk.co.asepstrath.bank.example.ExampleController;
 import io.jooby.Jooby;
 import io.jooby.json.JacksonModule;
 import io.jooby.handlebars.HandlebarsModule;
@@ -10,15 +8,11 @@ import io.jooby.hikari.HikariModule;
 import org.slf4j.Logger;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 
 public class App extends Jooby {
-
-    private BankController bc;
 
     {
         /*
@@ -31,7 +25,6 @@ public class App extends Jooby {
 
         /*
         This will host any files in src/main/resources/assets on <host>/assets
-        For example in the dice template (dice.hbs) it references "assets/dice.png" which is in resources/assets folder
          */
         assets("/assets/*", "/assets");
         assets("/service_worker.js","/service_worker.js");
@@ -42,18 +35,14 @@ public class App extends Jooby {
         DataSource ds = require(DataSource.class);
         Logger log = getLog();
 
-        BankController bc = new BankController(ds, log);
-
-        mvc(new ExampleController(ds,log));
-        mvc(bc);
+        mvc(new BankController(ds, log));
 
         /*
         Finally we register our application lifecycle methods
          */
-        onStarted(() -> onStart());
-        onStop(() -> onStop());
+        onStarted(this::onStart);
+        onStop(this::onStop);
 
-        get("/", ctx -> bc.getUserData());
     }
 
     public static void main(final String[] args) {
@@ -74,9 +63,8 @@ public class App extends Jooby {
         try (Connection connection = ds.getConnection()) {
             //
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate("CREATE TABLE `Example` (`Key` varchar(255),`Value` varchar(255))");
-            stmt.executeUpdate("INSERT INTO Example " + "VALUES ('WelcomeMessage', 'Welcome to A Bank')");
             stmt.executeUpdate("CREATE TABLE `userAccounts` (`Name` varchar(255),`Balance` DECIMAL(10, 2))");
+
             stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Rachel', 50.00)");
             stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Monica', 100.00)");
             stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Phoebe', 76.00)");
