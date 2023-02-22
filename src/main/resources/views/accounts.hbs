@@ -14,17 +14,21 @@
         <table class="table table-bordered table-striped"> <!-- Create Table -->
             <thead class="table-dark">
                 <tr>
-                    <!--<th scope="col">Index</th>-->
+                    <th scope="col">ID</th>
                     <th scope="col">Name</th>
                     <th scope="col">Balance</th>
+                    <th scope="col">Currency</th>
+                    <th scope="col">Account Type</th>
                 </tr>
             </thead>
             <tbody>
             {{#accounts}}
                 <tr>
-                    <!--<th scope="row">{{@index}}</th>-->
+                    <td>{{id}}</td>
                     <td>{{name}}</td>
                     <td>{{balance}}</td>
+                    <td>{{currency}}</td>
+                    <td>{{accountType}}</td>
                 </tr>
             {{/accounts}}
             </tbody>
