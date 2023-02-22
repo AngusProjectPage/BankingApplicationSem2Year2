@@ -57,16 +57,27 @@ public class BankController {
 
     @GET("/api")
     public String GET_api() {
-        return new Gson().toJson(getAccounts());
+        return new Gson().toJson(getAccounts()); // Converts accounts ArrayList to JSON equivalent
     }
 
     @GET
     public ModelAndView viewAccounts() {
-        HashMap hm = new HashMap<String,Object>();
-        String json = GET_api();
-        ArrayList<Account> accs = new Gson().fromJson(json, ArrayList.class);
+        HashMap hm = new HashMap<String,Object>(); //
+        String json = GET_api(); // Accounts in JSON format
+        ArrayList<Account> accs = new Gson().fromJson(json, ArrayList.class); // Makes a separate JSON entry for each ArrayList item
         hm.put("accounts",accs);
         return new ModelAndView("accounts.hbs", hm);
     }
+
+    /*
+    @GET("/AccountTransactions")
+    public ModelAndView transactionInformation() {
+        HashMap hm = new HashMap<String,Object>();
+        String json = GET_api();
+        ArrayList<Account> accs = newGson().fromJson(json, ArrayList.class);
+        hm.put("transactionInformation", accs);
+        return new ModelandView("transactionInformation.hbs", hm);
+    }
+     */
 
 }
