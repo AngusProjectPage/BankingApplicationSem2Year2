@@ -1,19 +1,20 @@
 package uk.co.asepstrath.bank;
 
-import io.jooby.exception.StatusCodeException;
+import io.jooby.ModelAndView;
+import kong.unirest.HttpMethod;
+import kong.unirest.MockClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
+
 import org.slf4j.Logger;
 
-import java.math.BigDecimal;
-import java.sql.*;
+import java.util.ArrayList;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class BankControllerTests {
 
@@ -27,10 +28,40 @@ public class BankControllerTests {
     }
 
     @Test
-    @DisplayName("BankController Constructor")
-    public void createBankController() {
+    @DisplayName("Create Controller")
+    public void createController() {
         BankController bankController = new BankController(ds, log);
         Assertions.assertNotNull(bankController);
+    }
+
+    @Test
+    @DisplayName("Get Accounts")
+    public void getAccounts() {
+        // Setup
+        BankController bankController = new BankController(ds, log);
+        MockClient mock = MockClient.register();
+
+        mock.expect(HttpMethod.GET, "http://api.asep-strath.co.uk/api/Team8/accounts")
+            .thenReturn("[{\"id\":\"00000000-0000-0000-0000-000000000000\",\"name\":\"Homer Simpson\",\"balance\":123.45,\"currency\":\"BMD\",\"accountType\":\"Checking Account\"}]");
+
+        ModelAndView mv = bankController.viewAccounts();
+        ArrayList mva = (ArrayList) mv.getModel().get("accounts");
+
+        // Test
+        Assertions.assertNotNull(mva);
+        Assertions.assertEquals(1, mva.size());
+        Assertions.assertEquals(
+                "[{id=00000000-0000-0000-0000-000000000000, name=Homer Simpson, balance=123.45, currency=BMD, accountType=Checking Account}]",
+                mva.toString()
+        );
+
+        /*Account acc = accs.get(0);
+
+        Assertions.assertEquals("00000000-0000-0000-0000-000000000000", acc.getUUID());
+        Assertions.assertEquals("Homer Simpson", acc.getName());
+        Assertions.assertEquals(123.45, acc.getBalance());
+        Assertions.assertEquals("BMD", acc.getCurrency());
+        Assertions.assertEquals("Checking Account", acc.getAccountType());*/
     }
 
 }
