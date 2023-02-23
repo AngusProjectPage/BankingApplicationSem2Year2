@@ -55,7 +55,10 @@ public class Account {
 
     @Override
     public String toString() {
-        return name + ": " + balance.toString();
+        return "[" + id + "] " +
+                name + ": " +
+                currency + balance.toString()
+                + " (" + accountType + ")";
     }
 
 }
