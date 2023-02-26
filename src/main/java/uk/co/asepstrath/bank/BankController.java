@@ -5,6 +5,7 @@ import io.jooby.ModelAndView;
 import io.jooby.StatusCode;
 import io.jooby.annotations.*;
 import io.jooby.exception.StatusCodeException;
+import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.slf4j.Logger;
 
@@ -67,6 +68,17 @@ public class BankController {
         ArrayList<Account> accs = new Gson().fromJson(json, ArrayList.class);
         hm.put("accounts",accs);
         return new ModelAndView("accounts.hbs", hm);
+    }
+
+    @GET ("/transactions")
+    public ModelAndView viewTransactionInformaton() {
+        HashMap hm = new HashMap<String,Object>();
+        Transaction transactionObject = Unirest.get("https://api.asep-strath.co.uk/api/team8/transactions/1")
+                .asObject(Transaction.class)
+                .getBody();
+
+        hm.put("transaction", transactionObject);
+        return new ModelAndView("transactions.hbs", hm);
     }
 
 }
