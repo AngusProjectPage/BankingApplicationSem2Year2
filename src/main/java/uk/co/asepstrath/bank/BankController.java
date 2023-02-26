@@ -13,6 +13,7 @@ public class BankController {
 
     public BankController(DataSource ds, Logger log) {
         data = new BankData(ds, log);
+        data.initialise();
     }
 
     @GET

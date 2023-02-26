@@ -21,8 +21,33 @@ public class BankData {
     public BankData(DataSource dataSource, Logger logger) {
         ds = dataSource;
         log = logger;
+    }
 
-        initialise();
+    /**
+     * Check if API is available
+     */
+    public boolean getAPIStatus() {
+        return Unirest.get("http://api.asep-strath.co.uk/api/Team8/").asJson().getStatus() == 404; // success, API is online
+    }
+
+    /**
+     * Get accounts from API or local database
+     *
+     * @return HashMap containing accounts and data origin
+     */
+    public HashMap<String, Object> getAccounts() {
+        HashMap<String, Object> hm = new HashMap<>();
+
+        // Check if API is available, if not, use local database
+        if (getAPIStatus()) {
+            hm.put("accounts", getAccountsAPI());
+            hm.put("dataOrigin", "API");
+        } else {
+            hm.put("accounts", getAccountsSQL());
+            hm.put("dataOrigin", "DB");
+        }
+
+        return hm;
     }
 
     /**
@@ -79,49 +104,21 @@ public class BankData {
     }
 
     /**
-     * Get accounts from API or local database
-     *
-     * @return HashMap containing accounts and data origin
-     */
-    public HashMap<String, Object> getAccounts() {
-        HashMap<String, Object> hm = new HashMap<>();
-
-        // Check if API is available, if not, use local database
-        if (Unirest.get("http://api.asep-strath.co.uk/api/Team8/").asJson().getStatus() == 404) {
-            hm.put("accounts", getAccountsAPI());
-            hm.put("dataOrigin", "Data pulled from http://api.asep-strath.co.uk/api/Team8/");
-        } else {
-            hm.put("accounts", getAccountsSQL());
-            hm.put("dataOrigin", "Data pulled from local database, API is not available");
-        }
-
-        return hm;
-    }
-
-    /**
      * Sanitise SQL string
      *
      * @param s String to sanitise
      * @return Sanitised string
      */
-    private String sanitiseSQL(String s) {
+    public String sanitiseSQL(String s) {
         return s.replace("'", "''");
     }
 
     /**
-     * Initialise local database
+     * Post accounts to local database
+     *
+     * @param accs ArrayList of accounts
      */
-    public void initialise() {
-        // API will return 404 if it is available
-        if (Unirest.get("http://api.asep-strath.co.uk/api/Team8/").asJson().getStatus() != 404) {
-            log.error("API is not available, cannot initialise database");
-            return;
-        }
-
-        // Get accounts from API
-        ArrayList<Account> accs = getAccountsAPI();
-
-        // Create accounts table and insert accounts
+    private void postAccountsSQL(ArrayList<Account> accs) {
         try (Connection connection = ds.getConnection()) {
             try (Statement stmt = connection.createStatement()) {
                 stmt.execute("CREATE TABLE IF NOT EXISTS accounts (id VARCHAR(36) PRIMARY KEY, name VARCHAR(255), balance DOUBLE, currency VARCHAR(3), accountType VARCHAR(255))");
@@ -132,7 +129,19 @@ public class BankData {
         } catch (SQLException e) {
             log.error("Error creating accounts table", e);
         }
+    }
 
+    /**
+     * Initialise local database
+     */
+    public void initialise() {
+        if (!getAPIStatus()) {
+            log.error("API is not available, cannot initialise database");
+            return;
+        }
+
+        // Get and store accounts
+        postAccountsSQL(getAccountsAPI());
     }
 
 }
