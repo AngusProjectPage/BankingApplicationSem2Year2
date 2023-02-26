@@ -5,33 +5,27 @@ import java.math.RoundingMode;
 import java.util.UUID;
 
 public class Account {
-    private UUID id;
-    private String name;
+    private final String id;
+    private final String name;
     private BigDecimal balance;
-    private String currency;
-    private String accountType;
+    private final String currency;
+    private final String accountType;
 
-    Account(String _name) {
-        this.id = UUID.randomUUID();
-        this.name = _name;
-        this.balance = BigDecimal.ZERO;
-        this.currency = "GBP";
-        this.accountType = "Current Account";
-    }
+    Account() { this(UUID.randomUUID().toString(), "Default Account", BigDecimal.ZERO, "GBP", "Current Account"); }
 
-    Account(String _name, BigDecimal amount) {
-        this.id = UUID.randomUUID();
+    Account(String _name, BigDecimal _balance) { this(UUID.randomUUID().toString(), _name, _balance, "GBP", "Current Account"); }
+
+    Account (String _id, String _name, BigDecimal amount, String _currency, String _accountType) {
+        this.id = _id;
         this.name = _name;
         this.balance = amount;
-        this.currency = "GBP";
-        this.accountType = "Current Account";
+        this.currency = _currency;
+        this.accountType = _accountType;
     }
 
-    public String getUUID() { return id.toString(); }
+    public String getId() { return id; }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
 
     public double getBalance() { return this.balance.setScale(2, RoundingMode.HALF_UP).doubleValue(); }
 

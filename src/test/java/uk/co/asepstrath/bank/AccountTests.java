@@ -11,17 +11,16 @@ public class AccountTests {
     @Test
     @DisplayName("Create Account")
     public void createAccount(){
-        Account a = new Account("John Smith");
+        Account a = new Account();
         Assertions.assertNotNull(a);
     }
 
     @Test
     @DisplayName("Value Initialisation")
     public void ZeroStart(){
-        String name = "John Smith";
-        Account a = new Account(name);
-        Assertions.assertNotNull(a.getUUID());
-        Assertions.assertEquals(name, a.getName());
+        Account a = new Account();
+        Assertions.assertNotNull(a.getId());
+        Assertions.assertEquals("Default Account", a.getName());
         Assertions.assertEquals(0, a.getBalance());
         Assertions.assertEquals("GBP", a.getCurrency());
         Assertions.assertEquals("Current Account", a.getAccountType());
