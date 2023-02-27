@@ -5,6 +5,7 @@ import io.jooby.ModelAndView;
 import io.jooby.StatusCode;
 import io.jooby.annotations.*;
 import io.jooby.exception.StatusCodeException;
+import kong.unirest.GenericType;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.slf4j.Logger;
@@ -15,10 +16,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @Path("/")
 public class BankController {
@@ -56,6 +54,23 @@ public class BankController {
         }
     }
 
+    private int getTotalTransactions(ArrayList<Transactions> transactionArray) {
+        int totalTransactions = 0;
+        for(Transactions transaction: transactionArray) {
+            totalTransactions++;
+        }
+        return totalTransactions;
+    }
+
+    private int getTotalTransactions(ArrayList<Transactions> transactionArray) {
+        int totalTransactions = 0;
+        for(Transactions transaction: transactionArray) {
+            totalTransactions++;
+        }
+        return totalTransactions;
+    }
+
+
     @GET("/api")
     public String GET_api() {
         return new Gson().toJson(getAccounts());
@@ -71,14 +86,12 @@ public class BankController {
     }
 
     @GET ("/transactions")
-    public ModelAndView viewTransactionInformaton() {
+    public void viewTransactionInformaton() {
         HashMap hm = new HashMap<String,Object>();
-        Transaction transactionObject = Unirest.get("https://api.asep-strath.co.uk/api/team8/transactions/1")
-                .asObject(Transaction.class)
+        ArrayList<Transactions> transactions = Unirest.get("https://api.asep-strath.co.uk/api/team8/transactions/")
+                .asObject(new GenericType<ArrayList<Transactions>>(){})
                 .getBody();
-
-        hm.put("transaction", transactionObject);
-        return new ModelAndView("transactions.hbs", hm);
+        int totalTransactions = getTotalTransactions(transactions);
     }
 
 }
