@@ -14,21 +14,31 @@
         <table class="table table-bordered table-striped"> <!-- Create Table -->
             <thead class="table-dark">
                 <tr>
-                    <!--<th scope="col">Index</th>-->
+                    <th scope="col">ID</th>
                     <th scope="col">Name</th>
                     <th scope="col">Balance</th>
+                    <th scope="col">Currency</th>
+                    <th scope="col">Account Type</th>
                 </tr>
             </thead>
             <tbody>
             {{#accounts}}
                 <tr>
-                    <!--<th scope="row">{{@index}}</th>-->
+                    <td>{{id}}</td>
                     <td>{{name}}</td>
                     <td>{{balance}}</td>
+                    <td>{{currency}}</td>
+                    <td>{{accountType}}</td>
                 </tr>
             {{/accounts}}
             </tbody>
         </table>
+    </div>
+
+    <div class="container">
+        <footer class="py-3 my-3">
+            <p class="text-center text-muted">({{dataOrigin}})</p>
+        </footer>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>

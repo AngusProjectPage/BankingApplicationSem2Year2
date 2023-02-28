@@ -9,21 +9,25 @@ import java.math.BigDecimal;
 public class AccountTests {
 
     @Test
-    @DisplayName("Test 0")
+    @DisplayName("Create Account")
     public void createAccount(){
-        Account a = new Account("John Smith");
+        Account a = new Account();
         Assertions.assertNotNull(a);
     }
 
     @Test
-    @DisplayName("Test 1 : Start Simple")
+    @DisplayName("Value Initialisation")
     public void ZeroStart(){
-        Account a = new Account("John Smith");
+        Account a = new Account();
+        Assertions.assertNotNull(a.getId());
+        Assertions.assertEquals("Default Account", a.getName());
         Assertions.assertEquals(0, a.getBalance());
+        Assertions.assertEquals("GBP", a.getCurrency());
+        Assertions.assertEquals("Current Account", a.getAccountType());
     }
 
     @Test
-    @DisplayName("Test 2: Adding Funds")
+    @DisplayName("Adding Funds")
     public void AddingFunds(){
         Account a = new Account("John Smith", new BigDecimal(20));
         a.deposit(50);
@@ -31,7 +35,7 @@ public class AccountTests {
     }
 
     @Test
-    @DisplayName("Test 3: Spending Spree")
+    @DisplayName("Withdrawing Funds")
     public void SubtractFunds(){
         Account a = new Account("John Smith", new BigDecimal(40));
         a.withdraw(20);
@@ -39,14 +43,14 @@ public class AccountTests {
     }
 
     @Test
-    @DisplayName("Test 4: No OverDraft")
+    @DisplayName("Throw Overdraft")
     public void NoOverDraft(){
         Account a = new Account("John Smith", new BigDecimal(30));
         Assertions.assertThrows(ArithmeticException.class,()-> a.withdraw(100));
     }
 
     @Test
-    @DisplayName("Test 5: Super Saving")
+    @DisplayName("Deposit/Withdraw Calculation")
     public void SuperSaving(){
         Account a = new Account("John Smith", new BigDecimal(20));
         for(int i=0; i<5; i++){
@@ -59,14 +63,11 @@ public class AccountTests {
     }
 
     @Test
-    @DisplayName("Test 6: Taking Care of Pennies")
+    @DisplayName("Decimal Balance")
     public void DepositWithPennies(){
-        Account a = new Account("John Smith", new BigDecimal(5.45));
+        Account a = new Account("John Smith", new BigDecimal("5.45"));
         a.deposit(17.56);
         Assertions.assertEquals(23.01,a.getBalance());
-
     }
-
-
 
 }

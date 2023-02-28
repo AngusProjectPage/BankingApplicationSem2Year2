@@ -1,89 +1,29 @@
 package uk.co.asepstrath.bank;
 
-import com.google.gson.Gson;
 import io.jooby.ModelAndView;
-import io.jooby.StatusCode;
 import io.jooby.annotations.*;
-import io.jooby.exception.StatusCodeException;
-import kong.unirest.GenericType;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
 import org.slf4j.Logger;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
 
 @Path("/")
 public class BankController {
 
-    private final DataSource dataSource;
-    private final Logger logger;
+    private final BankData data;
 
-    /*
-    This constructor can take in any dependencies the controller may need to respond to a request
-     */
     public BankController(DataSource ds, Logger log) {
-        dataSource = ds;
-        logger = log;
-    }
-
-    private ArrayList<Account> getAccounts() {
-        try (Connection connection = dataSource.getConnection()) {
-            // Create Statement (batch of SQL Commands)
-            Statement statement = connection.createStatement();
-            // Perform SQL Query
-            ResultSet set = statement.executeQuery("SELECT * FROM `userAccounts`");
-
-            ArrayList<Account> Accounts = new ArrayList<Account>();
-            while(set.next()) {
-                Account a = new Account(set.getString("Name"), set.getBigDecimal("Balance"));
-                Accounts.add(a);
-            }
-            // Return value
-            return Accounts;
-        } catch (SQLException e) {
-            // If something does go wrong this will log the stack trace
-            logger.error("Database Error Occurred",e);
-            // And return a HTTP 500 error to the requester
-            throw new StatusCodeException(StatusCode.SERVER_ERROR, "Database Error Occurred");
-        }
-    }
-
-    private String getTotalTransactions(ArrayList<Transactions> transactionArray) {
-        int totalTransactions = 0;
-        for(Transactions transaction: transactionArray) {
-            totalTransactions++;
-        }
-        return String.valueOf(totalTransactions);
-    }
-
-    @GET("/api")
-    public String GET_api() {
-        return new Gson().toJson(getAccounts());
+        data = new BankData(ds, log);
+        data.initialise();
     }
 
     @GET
     public ModelAndView viewAccounts() {
-        HashMap hm = new HashMap<String,Object>();
-        String json = GET_api();
-        ArrayList<Account> accs = new Gson().fromJson(json, ArrayList.class);
-        hm.put("accounts",accs);
-        return new ModelAndView("accounts.hbs", hm);
+        return new ModelAndView("accounts.hbs", data.getAccounts());
     }
 
     @GET ("/transactions")
-    public ModelAndView viewTransactionInformaton() {
-        HashMap hm = new HashMap<String,String>();
-        ArrayList<Transactions> transactions = Unirest.get("https://api.asep-strath.co.uk/api/team8/transactions/")
-                .asObject(new GenericType<ArrayList<Transactions>>(){})
-                .getBody();
-        String totalTransactions = getTotalTransactions(transactions);
-        hm.put("transactionTotal", totalTransactions);
-        return new ModelAndView("transactions.hbs", hm);
+    public ModelAndView viewTransactionInformation() {
+        return new ModelAndView("transactions.hbs", data.getTransactions());
     }
+
 }
