@@ -21,4 +21,9 @@ public class BankController {
         return new ModelAndView("accounts.hbs", data.getAccounts());
     }
 
+    @GET ("/transactions")
+    public ModelAndView viewTransactionInformation() {
+        return new ModelAndView("transactions.hbs", data.getTransactions());
+    }
+
 }
