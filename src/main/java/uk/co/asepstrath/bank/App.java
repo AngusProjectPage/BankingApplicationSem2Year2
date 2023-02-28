@@ -7,9 +7,6 @@ import io.jooby.hikari.HikariModule;
 import org.slf4j.Logger;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 public class App extends Jooby {
 
@@ -51,30 +48,7 @@ public class App extends Jooby {
     This function will be called when the application starts up,
     it should be used to ensure that the DB is properly setup
      */
-    public void onStart() {
-        Logger log = getLog();
-        log.info("Starting Up...");
-
-        // Fetch DB Source
-        DataSource ds = require(DataSource.class);
-        // Open Connection to DB
-        try (Connection connection = ds.getConnection()) {
-            //
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate("CREATE TABLE `userAccounts` (`Name` varchar(255),`Balance` DECIMAL(10, 2))");
-
-            stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Rachel', 50.00)");
-            stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Monica', 100.00)");
-            stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Phoebe', 76.00)");
-            stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Joey', 23.90)");
-            stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Chandler', 3.00)");
-            stmt.executeUpdate("INSERT INTO userAccounts " + "VALUES ('Ross', 54.32)");
-
-
-        } catch (SQLException e) {
-            log.error("Database Creation Error",e);
-        }
-    }
+    public void onStart() { System.out.println("Starting up..."); }
 
     /*
     This function will be called when the application shuts down
