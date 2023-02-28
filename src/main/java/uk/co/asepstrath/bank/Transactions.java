@@ -3,12 +3,16 @@ package uk.co.asepstrath.bank;
 public class Transactions {
     private String id;
     private String depositAccount;
+
+    private String withdrawAccount;
     private String timestamp;
     private double amount;
     private String currency;
 
 
     public String getId() {return id;}
+
+    public String tim() {return id;}
     public String getDepositAccount() {
         return depositAccount;
     }

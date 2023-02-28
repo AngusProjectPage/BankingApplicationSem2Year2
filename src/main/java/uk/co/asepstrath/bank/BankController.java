@@ -54,22 +54,13 @@ public class BankController {
         }
     }
 
-    private int getTotalTransactions(ArrayList<Transactions> transactionArray) {
+    private String getTotalTransactions(ArrayList<Transactions> transactionArray) {
         int totalTransactions = 0;
         for(Transactions transaction: transactionArray) {
             totalTransactions++;
         }
-        return totalTransactions;
+        return String.valueOf(totalTransactions);
     }
-
-    private int getTotalTransactions(ArrayList<Transactions> transactionArray) {
-        int totalTransactions = 0;
-        for(Transactions transaction: transactionArray) {
-            totalTransactions++;
-        }
-        return totalTransactions;
-    }
-
 
     @GET("/api")
     public String GET_api() {
@@ -86,12 +77,13 @@ public class BankController {
     }
 
     @GET ("/transactions")
-    public void viewTransactionInformaton() {
-        HashMap hm = new HashMap<String,Object>();
+    public ModelAndView viewTransactionInformaton() {
+        HashMap hm = new HashMap<String,String>();
         ArrayList<Transactions> transactions = Unirest.get("https://api.asep-strath.co.uk/api/team8/transactions/")
                 .asObject(new GenericType<ArrayList<Transactions>>(){})
                 .getBody();
-        int totalTransactions = getTotalTransactions(transactions);
+        String totalTransactions = getTotalTransactions(transactions);
+        hm.put("transactionTotal", totalTransactions);
+        return new ModelAndView("transactions.hbs", hm);
     }
-
 }

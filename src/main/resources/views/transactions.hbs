@@ -53,7 +53,7 @@ body {
 h1 {
     font-size: 3.906rem;
     font-weight: 700;
-    color: #333;
+    color: #222;
 }
 
 h2 {
@@ -63,7 +63,12 @@ h2 {
 
 .main-header {
     margin-top: 15px;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+.secondary-header {
+    font-size: 3.1rem;
+    color: #333;
 }
 
 .container {
@@ -106,7 +111,8 @@ h2 {
 </head>
 <body>
 <main class="container">
-    <h1 class="main-header">Account: {{id}}</h1>
+    <h1 class="main-header">Total Bank Transactions: {{transactionTotal}}</h1>
+    <h2 class="secondary-header">Account: {{id}}</h2>
     <div class="grid">
         <div class="balance-box"><h2 class="sub-header">Initial Balance</h2> <p class="amount"></p></div>
         <div class="balance-box"><h2 class="sub-header">Current Balance</h2><p class="amount">b</p></div>
