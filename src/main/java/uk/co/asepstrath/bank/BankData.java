@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class BankData {
 
@@ -29,6 +30,39 @@ public class BankData {
     public boolean getAPIStatus() {
         return Unirest.get("http://api.asep-strath.co.uk/api/Team8/").asJson().getStatus() == 404; // success, API is online
     }
+
+    public HashMap<String, Object> getAccount(String id) {
+        HashMap<String, Object> hm = new HashMap<>();
+
+        // Check if API is available, if not, use local database
+        if (getAPIStatus()) {
+            //hm.put("accounts", getAccountsAPI());
+            ArrayList<Account> accs = getAccountsAPI();
+            for (Account acc : accs) {
+                if (Objects.equals(acc.getId(), id)) {
+                    hm.put("account", acc);
+                    break;
+                }
+            }
+            hm.put("dataOrigin", "API");
+        } else {
+            //hm.put("accounts", getAccountsSQL());
+            ArrayList<Account> accs = getAccountsSQL();
+            for (Account acc : accs) {
+                if (Objects.equals(acc.getId(), id)) {
+                    hm.put("account", acc);
+                    break;
+                }
+            }
+            hm.put("dataOrigin", "DB");
+        }
+
+        hm.put("withdrawals", getUserWithdrawals());
+        hm.put("deposits", getUserDeposits());
+
+        return hm;
+    }
+
 
     /**
      * Get accounts from API or local database
@@ -98,32 +132,57 @@ public class BankData {
             }
         } catch (SQLException e) {
             log.error("Error getting accounts from SQL", e);
-            return null;
+            return new ArrayList<>();
         }
 
     }
 
+    public BigDecimal userFinalBalance(String userID) {
+        double finalBalance;
+        ArrayList<Transaction> userWithdrawls = getUserWithdrawls(userID);
+        ArrayList<Transaction> userDeposits = getUserDeposits(userID);
+        for(Transaction transaction: userWithdrawls) {
+            finalBalance = finalBalance - transaction.getAmount();
+        }
+        for(Transaction transaction: userDeposits) {
+            finalBalance = finalBalance.add(transaction.getAmount());
+        }
+        return finalBalance;
+    }
+
+    public ArrayList<Transaction> getUserWithdrawals(String userID) {
+        ArrayList<Transaction> transactions = getTransactionsSQL();
+        ArrayList<Transaction> userWithdrawals = new ArrayList<>();
+        for(Transaction transaction: transactions) {
+            if(Objects.equals(transaction.getWithdrawAccount(), userID)) {
+                userWithdrawals.add(transaction);
+            }
+        }
+            return userWithdrawals;
+    }
+
+    public ArrayList<Transaction> getUserDeposits(String userID) {
+        ArrayList<Transaction> transactions = getTransactionsSQL();
+        ArrayList<Transaction> userDeposits = new ArrayList<>();
+        for(Transaction transaction: transactions) {
+            if(Objects.equals(transaction.getDepositAccount(), userID)) {
+                userDeposits.add(transaction);
+            }
+        }
+        return userDeposits;
+    }
+
     /**
-     * Get transactions from API or local database
+     * Get transactions from local database
      *
      * @return HashMap containing transactions and data origin
      */
     public HashMap<String, Object> getTransactions() {
         HashMap<String, Object> hm = new HashMap<>();
-
-        // Check if API is available, if not, use local database
-        if (getAPIStatus()) {
-            ArrayList<Transaction> transactions = getTransactionsAPI();
-            hm.put("transactions", transactions);
-            hm.put("transactionTotal", transactions.size());
-            hm.put("dataOrigin", "API");
-        } else {
-            ArrayList<Transaction> transactions = getTransactionsSQL();
-            hm.put("transactions", transactions);
-            if (transactions != null) hm.put("transactionTotal", transactions.size());
-            hm.put("dataOrigin", "DB");
-        }
-
+        ArrayList<Transaction> transactions = getTransactionsSQL();
+        hm.put("transactions", transactions);
+        if (transactions != null) hm.put("transactionTotal", transactions.size());
+        hm.put("dataOrigin", "DB");
         return hm;
     }
 
@@ -176,7 +235,7 @@ public class BankData {
             }
         } catch (SQLException e) {
             log.error("Error getting transactions from SQL", e);
-            return null;
+            return new ArrayList<>();
         }
 
     }
