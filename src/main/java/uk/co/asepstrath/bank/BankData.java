@@ -201,7 +201,17 @@ public class BankData {
             try (Statement stmt = connection.createStatement()) {
                 stmt.execute("CREATE TABLE IF NOT EXISTS accounts (id VARCHAR(36) PRIMARY KEY, name VARCHAR(255), balance DOUBLE, currency VARCHAR(3), accountType VARCHAR(255))");
                 for (Account acc : accs) {
-                    stmt.execute("INSERT INTO accounts (id, name, balance, currency, accountType) VALUES ('" + acc.getId() + "', '" + sanitiseSQL(acc.getName()) + "', " + acc.getBalance() + ", '" + acc.getCurrency() + "', '" + acc.getAccountType() + "')");
+
+                    PreparedStatement pstmt = connection.prepareStatement("INSERT INTO accounts (id, name, balance, currency, accountType) VALUES (?, ?, ?, ?, ?)");
+
+                    pstmt.setString(1, acc.getId());
+                    pstmt.setString(2, sanitiseSQL(acc.getName()));
+                    pstmt.setDouble(3, acc.getBalance());
+                    pstmt.setString(4, acc.getCurrency());
+                    pstmt.setString(5, acc.getAccountType());
+
+                    pstmt.executeUpdate();
+
                 }
             }
         } catch (SQLException e) {
@@ -219,7 +229,18 @@ public class BankData {
             try (Statement stmt = connection.createStatement()) {
                 stmt.execute("CREATE TABLE IF NOT EXISTS transactions (id VARCHAR(36) PRIMARY KEY, depositAccount VARCHAR(36), withdrawAccount VARCHAR(36), timestamp VARCHAR(255), amount DOUBLE, currency VARCHAR(3))");
                 for (Transaction t : transactions) {
-                    stmt.execute("INSERT INTO transactions (id, depositAccount, withdrawAccount, timestamp, amount, currency) VALUES ('" + t.getId() + "', '" + t.getDepositAccount() + "', '" + t.getWithdrawAccount() + "', '" + t.getTimestamp() + "', " + t.getAmount() + ", '" + t.getCurrency() + "')");
+
+                    PreparedStatement pstmt = connection.prepareStatement("INSERT INTO transactions (id, depositAccount, withdrawAccount, timestamp, amount, currency) VALUES (?, ?, ?, ?, ?, ?)");
+
+                    pstmt.setString(1, t.getId());
+                    pstmt.setString(2, t.getDepositAccount());
+                    pstmt.setString(3, t.getWithdrawAccount());
+                    pstmt.setString(4, t.getTimestamp());
+                    pstmt.setDouble(5, t.getAmount());
+                    pstmt.setString(6, t.getCurrency());
+
+                    pstmt.executeUpdate();
+
                 }
             }
         } catch (SQLException e) {
