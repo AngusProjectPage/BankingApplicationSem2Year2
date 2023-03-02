@@ -59,19 +59,19 @@ public class BankDataTests {
         ArrayList<Account> r = bankData.getAccountsAPI();
 
         // Assertions
-        Assertions.assertEquals(r.size(), 2);
+        Assertions.assertEquals(2, r.size());
 
-        Assertions.assertEquals(r.get(0).getId(), "00000000-0000-0000-0000-000000000000");
-        Assertions.assertEquals(r.get(0).getName(), "Homer Simpson");
-        Assertions.assertEquals(r.get(0).getBalance(), 123.45);
-        Assertions.assertEquals(r.get(0).getCurrency(), "GBP");
-        Assertions.assertEquals(r.get(0).getAccountType(), "Current Account");
+        Assertions.assertEquals("00000000-0000-0000-0000-000000000000", r.get(0).getId());
+        Assertions.assertEquals("Homer Simpson", r.get(0).getName());
+        Assertions.assertEquals(123.45, r.get(0).getBalance());
+        Assertions.assertEquals("GBP", r.get(0).getCurrency());
+        Assertions.assertEquals("Current Account", r.get(0).getAccountType());
 
-        Assertions.assertEquals(r.get(1).getId(), "11111111-1111-1111-1111-111111111111");
-        Assertions.assertEquals(r.get(1).getName(), "Peter Griffin");
-        Assertions.assertEquals(r.get(1).getBalance(), 678.9);
-        Assertions.assertEquals(r.get(1).getCurrency(), "USD");
-        Assertions.assertEquals(r.get(1).getAccountType(), "Investment Account");
+        Assertions.assertEquals("11111111-1111-1111-1111-111111111111", r.get(1).getId());
+        Assertions.assertEquals("Peter Griffin", r.get(1).getName());
+        Assertions.assertEquals(678.9, r.get(1).getBalance());
+        Assertions.assertEquals("USD", r.get(1).getCurrency());
+        Assertions.assertEquals("Investment Account", r.get(1).getAccountType());
     }
 
     @Test
@@ -93,19 +93,19 @@ public class BankDataTests {
         ArrayList<Account> r = bankData.getAccountsSQL();
 
         // Assertions
-        Assertions.assertEquals(r.size(), 2);
+        Assertions.assertEquals(2, r.size());
 
-        Assertions.assertEquals(r.get(0).getId(), "00000000-0000-0000-0000-000000000000");
-        Assertions.assertEquals(r.get(0).getName(), "Homer Simpson");
-        Assertions.assertEquals(r.get(0).getBalance(), 123.45);
-        Assertions.assertEquals(r.get(0).getCurrency(), "GBP");
-        Assertions.assertEquals(r.get(0).getAccountType(), "Current Account");
+        Assertions.assertEquals("00000000-0000-0000-0000-000000000000", r.get(0).getId());
+        Assertions.assertEquals("Homer Simpson", r.get(0).getName());
+        Assertions.assertEquals(123.45, r.get(0).getBalance());
+        Assertions.assertEquals("GBP", r.get(0).getCurrency());
+        Assertions.assertEquals("Current Account", r.get(0).getAccountType());
 
-        Assertions.assertEquals(r.get(1).getId(), "11111111-1111-1111-1111-111111111111");
-        Assertions.assertEquals(r.get(1).getName(), "Peter Griffin");
-        Assertions.assertEquals(r.get(1).getBalance(), 678.9);
-        Assertions.assertEquals(r.get(1).getCurrency(), "USD");
-        Assertions.assertEquals(r.get(1).getAccountType(), "Investment Account");
+        Assertions.assertEquals("11111111-1111-1111-1111-111111111111", r.get(1).getId());
+        Assertions.assertEquals("Peter Griffin", r.get(1).getName());
+        Assertions.assertEquals(678.9, r.get(1).getBalance());
+        Assertions.assertEquals("USD", r.get(1).getCurrency());
+        Assertions.assertEquals("Investment Account", r.get(1).getAccountType());
     }
 
     @Test
@@ -120,7 +120,7 @@ public class BankDataTests {
         ArrayList<Account> r = bankData.getAccountsSQL();
 
         // Assertions
-        Assertions.assertEquals(r.size(), 0);
+        Assertions.assertEquals(0, r.size());
     }
 
     @Test
@@ -160,21 +160,21 @@ public class BankDataTests {
         ArrayList<Transaction> r = bankData.getTransactionsAPI();
 
         // Assertions
-        Assertions.assertEquals(r.size(), 2);
+        Assertions.assertEquals(2, r.size());
 
-        Assertions.assertEquals(r.get(0).getId(), "99999999-9999-9999-9999-999999999999");
-        Assertions.assertEquals(r.get(0).getDepositAccount(), "00000000-0000-0000-0000-000000000000");
-        Assertions.assertEquals(r.get(0).getWithdrawAccount(), "11111111-1111-1111-1111-111111111111");
-        Assertions.assertEquals(r.get(0).getTimestamp(), "2020-01-01T00:00:00Z");
-        Assertions.assertEquals(r.get(0).getAmount(), 123.45);
-        Assertions.assertEquals(r.get(0).getCurrency(), "GBP");
+        Assertions.assertEquals("99999999-9999-9999-9999-999999999999", r.get(0).getId());
+        Assertions.assertEquals("00000000-0000-0000-0000-000000000000", r.get(0).getDepositAccount());
+        Assertions.assertEquals("11111111-1111-1111-1111-111111111111", r.get(0).getWithdrawAccount());
+        Assertions.assertEquals("2020-01-01T00:00:00Z", r.get(0).getTimestamp());
+        Assertions.assertEquals(123.45, r.get(0).getAmount());
+        Assertions.assertEquals("GBP", r.get(0).getCurrency());
 
-        Assertions.assertEquals(r.get(1).getId(), "88888888-8888-8888-8888-888888888888");
-        Assertions.assertEquals(r.get(1).getDepositAccount(), "22222222-2222-2222-2222-222222222222");
-        Assertions.assertEquals(r.get(1).getWithdrawAccount(), "33333333-3333-3333-3333-333333333333");
-        Assertions.assertEquals(r.get(1).getTimestamp(), "2020-01-01T00:00:00Z");
-        Assertions.assertEquals(r.get(1).getAmount(), 678.9);
-        Assertions.assertEquals(r.get(1).getCurrency(), "USD");
+        Assertions.assertEquals("88888888-8888-8888-8888-888888888888", r.get(1).getId());
+        Assertions.assertEquals("22222222-2222-2222-2222-222222222222", r.get(1).getDepositAccount());
+        Assertions.assertEquals("33333333-3333-3333-3333-333333333333", r.get(1).getWithdrawAccount());
+        Assertions.assertEquals("2020-01-01T00:00:00Z", r.get(1).getTimestamp());
+        Assertions.assertEquals(678.9, r.get(1).getAmount());
+        Assertions.assertEquals("USD", r.get(1).getCurrency());
     }
 
     @Test
@@ -197,21 +197,21 @@ public class BankDataTests {
         ArrayList<Transaction> r = bankData.getTransactionsSQL();
 
         // Assertions
-        Assertions.assertEquals(r.size(), 2);
+        Assertions.assertEquals(2, r.size());
 
-        Assertions.assertEquals(r.get(0).getId(), "99999999-9999-9999-9999-999999999999");
-        Assertions.assertEquals(r.get(0).getDepositAccount(), "00000000-0000-0000-0000-000000000000");
-        Assertions.assertEquals(r.get(0).getWithdrawAccount(), "11111111-1111-1111-1111-111111111111");
-        Assertions.assertEquals(r.get(0).getTimestamp(), "2020-01-01T00:00:00Z");
-        Assertions.assertEquals(r.get(0).getAmount(), 123.45);
-        Assertions.assertEquals(r.get(0).getCurrency(), "GBP");
+        Assertions.assertEquals("99999999-9999-9999-9999-999999999999", r.get(0).getId());
+        Assertions.assertEquals("00000000-0000-0000-0000-000000000000", r.get(0).getDepositAccount());
+        Assertions.assertEquals("11111111-1111-1111-1111-111111111111", r.get(0).getWithdrawAccount());
+        Assertions.assertEquals("2020-01-01T00:00:00Z", r.get(0).getTimestamp());
+        Assertions.assertEquals(123.45, r.get(0).getAmount());
+        Assertions.assertEquals("GBP", r.get(0).getCurrency());
 
-        Assertions.assertEquals(r.get(1).getId(), "88888888-8888-8888-8888-888888888888");
-        Assertions.assertEquals(r.get(1).getDepositAccount(), "22222222-2222-2222-2222-222222222222");
-        Assertions.assertEquals(r.get(1).getWithdrawAccount(), "33333333-3333-3333-3333-333333333333");
-        Assertions.assertEquals(r.get(1).getTimestamp(), "2020-01-01T00:00:00Z");
-        Assertions.assertEquals(r.get(1).getAmount(), 678.9);
-        Assertions.assertEquals(r.get(1).getCurrency(), "USD");
+        Assertions.assertEquals("88888888-8888-8888-8888-888888888888", r.get(1).getId());
+        Assertions.assertEquals("22222222-2222-2222-2222-222222222222", r.get(1).getDepositAccount());
+        Assertions.assertEquals("33333333-3333-3333-3333-333333333333", r.get(1).getWithdrawAccount());
+        Assertions.assertEquals("2020-01-01T00:00:00Z", r.get(1).getTimestamp());
+        Assertions.assertEquals(678.9, r.get(1).getAmount());
+        Assertions.assertEquals("USD", r.get(1).getCurrency());
     }
 
     @Test
@@ -226,7 +226,7 @@ public class BankDataTests {
         ArrayList<Transaction> r = bankData.getTransactionsSQL();
 
         // Assertions
-        Assertions.assertEquals(r.size(), 0);
+        Assertions.assertEquals(0, r.size());
     }
 
     @Test
@@ -255,7 +255,7 @@ public class BankDataTests {
     public void sanitiseSQL() {
         BankData bankData = new BankData(ds, log);
         String s = "'";
-        Assertions.assertEquals(bankData.sanitiseSQL(s), "''");
+        Assertions.assertEquals("''", bankData.sanitiseSQL(s));
     }
 
 }
