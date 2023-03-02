@@ -1,5 +1,7 @@
 package uk.co.asepstrath.bank;
 
+import com.github.jknack.handlebars.internal.lang3.StringUtils;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.UUID;
@@ -16,11 +18,12 @@ public class Account {
     Account(String _name, BigDecimal _balance) { this(UUID.randomUUID().toString(), _name, _balance, "GBP", "Current Account"); }
 
     Account (String _id, String _name, BigDecimal amount, String _currency, String _accountType) {
-        this.id = _id;
-        this.name = _name;
+        // Limit string lengths to prevent SQL injection
+        this.id = StringUtils.left(_id, 36);
+        this.name = StringUtils.left(_name, 255);
         this.balance = amount;
-        this.currency = _currency;
-        this.accountType = _accountType;
+        this.currency = StringUtils.left(_currency, 3);
+        this.accountType = StringUtils.left(_accountType, 255);
     }
 
     public String getId() { return id; }
