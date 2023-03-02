@@ -70,4 +70,19 @@ public class AccountTests {
         Assertions.assertEquals(23.01,a.getBalance());
     }
 
+    @Test
+    @DisplayName("String Representation")
+    public void StringRepresentation(){
+        String id = "00000000-0000-0000-0000-000000000000";
+        String name = "John Smith";
+        BigDecimal balance = new BigDecimal("20.00");
+        String currency = "GBP";
+        String accountType = "Current Account";
+
+        Account a = new Account(id, name, balance, currency, accountType);
+
+        String expected = "[" + id + "] " + name + ": " + currency + balance + " (" + accountType + ")";
+        Assertions.assertEquals(expected, a.toString());
+    }
+
 }
