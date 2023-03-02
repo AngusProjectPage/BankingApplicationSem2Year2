@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 import static org.mockito.Mockito.mock;
 
-public class BankDataTests {
+class BankDataTests {
 
     static DataSource ds;
     static Logger log;
@@ -27,7 +27,7 @@ public class BankDataTests {
     static ResultSet rs;
 
     @BeforeEach
-    public void before() {
+    void before() {
         ds = mock(DataSource.class);
         log = mock(Logger.class);
         mc = MockClient.register();
@@ -38,7 +38,7 @@ public class BankDataTests {
 
     @Test
     @DisplayName("Create Data")
-    public void createData() {
+    void createData() {
         BankData bankData = new BankData(ds, log);
         Assertions.assertNotNull(bankData);
     }
@@ -47,7 +47,7 @@ public class BankDataTests {
 
     @Test
     @DisplayName("Get Accounts from API")
-    public void getAPIAccounts() {
+    void getAPIAccounts() {
         BankData bankData = new BankData(ds, log);
         MockClient mock = MockClient.register();
 
@@ -76,7 +76,7 @@ public class BankDataTests {
 
     @Test
     @DisplayName("Get Accounts from SQL")
-    public void getSQLAccounts() throws SQLException {
+    void getSQLAccounts() throws SQLException {
         BankData bankData = new BankData(ds, log);
 
         Mockito.when(ds.getConnection()).thenReturn(conn);
@@ -110,7 +110,7 @@ public class BankDataTests {
 
     @Test
     @DisplayName("Get Accounts SQL Exception")
-    public void getSQLAccountsException() throws SQLException {
+    void getSQLAccountsException() throws SQLException {
         BankData bankData = new BankData(ds, log);
 
         Mockito.when(ds.getConnection()).thenReturn(conn);
@@ -125,7 +125,7 @@ public class BankDataTests {
 
     @Test
     @DisplayName("Store Accounts in DB")
-    public void storeAccounts() throws SQLException {
+    void storeAccounts() throws SQLException {
         BankData bankData = new BankData(ds, log);
 
         Mockito.when(ds.getConnection()).thenReturn(conn);
@@ -148,7 +148,7 @@ public class BankDataTests {
 
     @Test
     @DisplayName("Get Transactions from API")
-    public void getAPITransactions() {
+    void getAPITransactions() {
         BankData bankData = new BankData(ds, log);
         MockClient mock = MockClient.register();
 
@@ -179,7 +179,7 @@ public class BankDataTests {
 
     @Test
     @DisplayName("Get Transactions from SQL")
-    public void getSQLTransactions() throws SQLException {
+    void getSQLTransactions() throws SQLException {
         BankData bankData = new BankData(ds, log);
 
         Mockito.when(ds.getConnection()).thenReturn(conn);
@@ -216,7 +216,7 @@ public class BankDataTests {
 
     @Test
     @DisplayName("Get Transactions SQL Exception")
-    public void getSQLTransactionsException() throws SQLException {
+    void getSQLTransactionsException() throws SQLException {
         BankData bankData = new BankData(ds, log);
 
         Mockito.when(ds.getConnection()).thenReturn(conn);
@@ -231,7 +231,7 @@ public class BankDataTests {
 
     @Test
     @DisplayName("Store Transactions in DB")
-    public void storeTransactions() throws SQLException {
+    void storeTransactions() throws SQLException {
         BankData bankData = new BankData(ds, log);
 
         Mockito.when(ds.getConnection()).thenReturn(conn);
@@ -252,7 +252,7 @@ public class BankDataTests {
 
     @Test
     @DisplayName("Sanitise SQL")
-    public void sanitiseSQL() {
+    void sanitiseSQL() {
         BankData bankData = new BankData(ds, log);
         String s = "'";
         Assertions.assertEquals("''", bankData.sanitiseSQL(s));

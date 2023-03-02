@@ -11,13 +11,13 @@ import org.slf4j.Logger;
 
 import static org.mockito.Mockito.mock;
 
-public class BankControllerTests extends Jooby {
+class BankControllerTests extends Jooby {
 
     static DataSource ds;
     static Logger log;
 
     @BeforeEach
-    public void before() {
+    void before() {
         install(new HikariModule("mem"));
         ds = require(DataSource.class);
         log = mock(Logger.class);
@@ -25,14 +25,14 @@ public class BankControllerTests extends Jooby {
 
     @Test
     @DisplayName("Create Controller")
-    public void createController() {
+    void createController() {
         BankController bankController = new BankController(ds, log);
         Assertions.assertNotNull(bankController);
     }
 
     @Test
     @DisplayName("View Accounts")
-    public void viewAccounts() {
+    void viewAccounts() {
         BankController bankController = new BankController(ds, log);
         ModelAndView mav = bankController.viewAccounts();
         Assertions.assertNotNull(mav.getModel().get("accounts"));
@@ -41,7 +41,7 @@ public class BankControllerTests extends Jooby {
 
     @Test
     @DisplayName("View Transactions")
-    public void viewTransactions() {
+    void viewTransactions() {
         BankController bankController = new BankController(ds, log);
         ModelAndView mav = bankController.viewTransactionInformation();
         Assertions.assertNotNull(mav.getModel().get("transactions"));
