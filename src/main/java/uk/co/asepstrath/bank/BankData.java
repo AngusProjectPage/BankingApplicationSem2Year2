@@ -138,16 +138,27 @@ public class BankData {
     }
 
     public BigDecimal userFinalBalance(String userID) {
-        double finalBalance;
-        ArrayList<Transaction> userWithdrawls = getUserWithdrawls(userID);
+        BigDecimal finalBalance = new BigDecimal(0);
+        ArrayList<Transaction> userWithdrawls = getUserWithdrawals(userID);
         ArrayList<Transaction> userDeposits = getUserDeposits(userID);
         for(Transaction transaction: userWithdrawls) {
-            finalBalance = finalBalance - transaction.getAmount();
+            finalBalance.subtract(transaction.getAmount());
         }
         for(Transaction transaction: userDeposits) {
-            finalBalance = finalBalance.add(transaction.getAmount());
+            finalBalance.add(transaction.getAmount());
         }
         return finalBalance;
+    }
+
+    public BigDecimal userInitalBalance(String userID) {
+        BigDecimal initalBalance = new BigDecimal(0);
+        ArrayList<Transaction> transactions = getTransactionsSQL();
+        for(Transaction transaction: transactions) {
+            if(Objects.equals(transaction.getWithdrawAccount(), userID) || Objects.equals(transaction.getDepositAccount(), userID)) {
+                initalBalance = transaction.getAmount();
+            }
+        }
+        return initalBalance;
     }
 
     public ArrayList<Transaction> getUserWithdrawals(String userID) {

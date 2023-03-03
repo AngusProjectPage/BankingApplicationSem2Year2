@@ -29,8 +29,8 @@ public class Transaction {
     public String getTimestamp() {
         return timestamp;
     }
-    public double getAmount() {
-        return this.amount.setScale(2, RoundingMode.HALF_UP).doubleValue();
+    public BigDecimal getAmount() {
+        return this.amount.setScale(2, RoundingMode.HALF_UP);
     }
     public String getCurrency() {
         return currency;
