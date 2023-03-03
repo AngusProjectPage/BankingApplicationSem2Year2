@@ -11,17 +11,18 @@ import org.slf4j.Logger;
 
 import static org.mockito.Mockito.mock;
 
-class BankControllerTests extends Jooby {
+public class BankControllerTests extends Jooby {
 
     static DataSource ds;
     static Logger log;
 
     @BeforeEach
-    void before() {
+    public void before() {
         install(new HikariModule("mem"));
         ds = require(DataSource.class);
         log = mock(Logger.class);
     }
+
 
     @Test
     @DisplayName("Create Controller")
