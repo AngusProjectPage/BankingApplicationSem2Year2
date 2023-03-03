@@ -26,17 +26,27 @@ public class BankControllerTests extends Jooby {
 
     @Test
     @DisplayName("Create Controller")
-    public void createController() {
+    void createController() {
         BankController bankController = new BankController(ds, log);
         Assertions.assertNotNull(bankController);
     }
 
     @Test
     @DisplayName("View Accounts")
-    public void viewAccounts() {
+    void viewAccounts() {
         BankController bankController = new BankController(ds, log);
         ModelAndView mav = bankController.viewAccounts();
         Assertions.assertNotNull(mav.getModel().get("accounts"));
+        Assertions.assertNotNull(mav.getModel().get("dataOrigin"));
+    }
+
+    @Test
+    @DisplayName("View Transactions")
+    void viewTransactions() {
+        BankController bankController = new BankController(ds, log);
+        ModelAndView mav = bankController.viewTransactionInformation();
+        Assertions.assertNotNull(mav.getModel().get("transactions"));
+        Assertions.assertNotNull(mav.getModel().get("transactionTotal"));
         Assertions.assertNotNull(mav.getModel().get("dataOrigin"));
     }
 
