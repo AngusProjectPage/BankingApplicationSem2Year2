@@ -30,7 +30,7 @@ public class Account {
 
     public String getName() { return name; }
 
-    public BigDecimal getBalance() { return this.balance.setScale(2, RoundingMode.HALF_UP).doubleValue(); }
+    public BigDecimal getBalance() { return this.balance.setScale(2, RoundingMode.HALF_UP); }
 
     public String getCurrency() { return currency; }
 

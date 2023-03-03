@@ -286,7 +286,6 @@ public class BankData {
                     pstmt.setDouble(3, acc.getBalance());
                     pstmt.setString(4, acc.getCurrency());
                     pstmt.setString(5, acc.getAccountType());
-
                     pstmt.executeUpdate();
 
                 }
