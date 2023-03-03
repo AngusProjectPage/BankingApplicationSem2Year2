@@ -9,10 +9,7 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 import static org.mockito.Mockito.mock;
@@ -24,6 +21,7 @@ class BankDataTests {
     static MockClient mc;
     static Connection conn;
     static Statement stmt;
+    static PreparedStatement pstmt;
     static ResultSet rs;
 
     @BeforeEach
@@ -33,6 +31,7 @@ class BankDataTests {
         mc = MockClient.register();
         conn = mock(Connection.class);
         stmt = mock(Statement.class);
+        pstmt = mock(PreparedStatement.class);
         rs = mock(ResultSet.class);
     }
 
@@ -130,7 +129,7 @@ class BankDataTests {
 
         Mockito.when(ds.getConnection()).thenReturn(conn);
         Mockito.when(conn.createStatement()).thenReturn(stmt);
-        Mockito.when(stmt.executeUpdate(Mockito.anyString())).thenReturn(1);
+        Mockito.when(conn.prepareStatement(Mockito.anyString())).thenReturn(pstmt);
 
         ArrayList<Account> accounts = new ArrayList<>();
         accounts.add(new Account("00000000-0000-0000-0000-000000000000", "Homer Simpson", BigDecimal.valueOf(123.45), "GBP", "Current Account"));
@@ -140,8 +139,20 @@ class BankDataTests {
 
         // Assertions
         Mockito.verify(stmt, Mockito.atLeastOnce()).execute(Mockito.anyString()); // Create table
-        Mockito.verify(stmt, Mockito.atLeastOnce()).execute("INSERT INTO accounts (id, name, balance, currency, accountType) VALUES ('00000000-0000-0000-0000-000000000000', 'Homer Simpson', 123.45, 'GBP', 'Current Account')");
-        Mockito.verify(stmt, Mockito.atLeastOnce()).execute("INSERT INTO accounts (id, name, balance, currency, accountType) VALUES ('11111111-1111-1111-1111-111111111111', 'Peter Griffin', 678.9, 'USD', 'Investment Account')");
+
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(1, "00000000-0000-0000-0000-000000000000");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(2, "Homer Simpson");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setDouble(3, 123.45);
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(4, "GBP");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(5, "Current Account");
+
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(1, "11111111-1111-1111-1111-111111111111");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(2, "Peter Griffin");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setDouble(3, 678.9);
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(4, "USD");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(5, "Investment Account");
+
+        Mockito.verify(pstmt, Mockito.times(2)).executeUpdate();
     }
 
     // Transactions
@@ -236,7 +247,7 @@ class BankDataTests {
 
         Mockito.when(ds.getConnection()).thenReturn(conn);
         Mockito.when(conn.createStatement()).thenReturn(stmt);
-        Mockito.when(stmt.executeUpdate(Mockito.anyString())).thenReturn(1);
+        Mockito.when(conn.prepareStatement(Mockito.anyString())).thenReturn(pstmt);
 
         ArrayList<Transaction> transactions = new ArrayList<>();
         transactions.add(new Transaction("99999999-9999-9999-9999-999999999999", "00000000-0000-0000-0000-000000000000", "11111111-1111-1111-1111-111111111111", "2020-01-01T00:00:00Z", BigDecimal.valueOf(123.45), "GBP"));
@@ -246,8 +257,22 @@ class BankDataTests {
 
         // Assertions
         Mockito.verify(stmt, Mockito.atLeastOnce()).execute(Mockito.anyString()); // Create table
-        Mockito.verify(stmt, Mockito.atLeastOnce()).execute("INSERT INTO transactions (id, depositAccount, withdrawAccount, timestamp, amount, currency) VALUES ('99999999-9999-9999-9999-999999999999', '00000000-0000-0000-0000-000000000000', '11111111-1111-1111-1111-111111111111', '2020-01-01T00:00:00Z', 123.45, 'GBP')");
-        Mockito.verify(stmt, Mockito.atLeastOnce()).execute("INSERT INTO transactions (id, depositAccount, withdrawAccount, timestamp, amount, currency) VALUES ('88888888-8888-8888-8888-888888888888', '22222222-2222-2222-2222-222222222222', '33333333-3333-3333-3333-333333333333', '2020-01-01T00:00:00Z', 678.9, 'USD')");
+
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(1, "99999999-9999-9999-9999-999999999999");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(2, "00000000-0000-0000-0000-000000000000");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(3, "11111111-1111-1111-1111-111111111111");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(4, "2020-01-01T00:00:00Z");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setDouble(5, 123.45);
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(6, "GBP");
+
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(1, "88888888-8888-8888-8888-888888888888");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(2, "22222222-2222-2222-2222-222222222222");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(3, "33333333-3333-3333-3333-333333333333");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(4, "2020-01-01T00:00:00Z");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setDouble(5, 678.9);
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(6, "USD");
+
+        Mockito.verify(pstmt, Mockito.times(2)).executeUpdate();
     }
 
     @Test
