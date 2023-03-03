@@ -137,10 +137,21 @@ public class BankData {
 
     }
 
+    public BigDecimal intialBalance(String userID) {
+        ArrayList<Account> accounts = getAccountsSQL();
+        BigDecimal intitalBalance = new BigDecimal(0);
+        for(int i=0; i<accounts.size(); i++) {
+            if(accounts.get(i).getId() == userID) {
+                intitalBalance = accounts.get(i).getBalance();
+            }
+        }
+        return intitalBalance;
+    }
+
     public BigDecimal userFinalBalance(String userID) {
-        BigDecimal finalBalance = new BigDecimal(0);
         ArrayList<Transaction> userWithdrawls = getUserWithdrawals(userID);
         ArrayList<Transaction> userDeposits = getUserDeposits(userID);
+        BigDecimal finalBalance = intialBalance(userID);
         for(Transaction transaction: userWithdrawls) {
             finalBalance.subtract(transaction.getAmount());
         }
@@ -148,17 +159,6 @@ public class BankData {
             finalBalance.add(transaction.getAmount());
         }
         return finalBalance;
-    }
-
-    public BigDecimal userInitalBalance(String userID) {
-        BigDecimal initalBalance = new BigDecimal(0);
-        ArrayList<Transaction> transactions = getTransactionsSQL();
-        for(Transaction transaction: transactions) {
-            if(Objects.equals(transaction.getWithdrawAccount(), userID) || Objects.equals(transaction.getDepositAccount(), userID)) {
-                initalBalance = transaction.getAmount();
-            }
-        }
-        return initalBalance;
     }
 
     public ArrayList<Transaction> getUserWithdrawals(String userID) {
@@ -203,22 +203,29 @@ public class BankData {
      * @return ArrayList of transactions
      */
     private ArrayList<Transaction> getTransactionsAPI() {
-        HttpResponse<JsonNode> res = Unirest.get("http://api.asep-strath.co.uk/api/Team8/transactions").asJson();
-        JSONArray jsonTrans = res.getBody().getArray();
         ArrayList<Transaction> transactions = new ArrayList<>();
+        int page = 1;
+        while(true) {
+            HttpResponse<JsonNode> res = Unirest.get("http://api.asep-strath.co.uk/api/Team8/transactions").queryString("PageNumber", page).asJson();
+            JSONArray jsonTrans = res.getBody().getArray();
+            if(res.getStatus() == 200) {
+                for (int i=0; i < jsonTrans.length(); i++) {
+                    JSONObject jsonT = jsonTrans.getJSONObject(i);
+                    transactions.add(new Transaction(
+                            jsonT.getString("id"),
+                            jsonT.getString("depositAccount"),
+                            jsonT.getString("withdrawAccount"),
+                            jsonT.getString("timestamp"),
+                            BigDecimal.valueOf(jsonT.getDouble("amount")),
+                            jsonT.getString("currency")
+                    ));
+                }
+                page++;
+            } else {
+                break;
+            }
 
-        for (int i=0; i < jsonTrans.length(); i++) {
-            JSONObject jsonT = jsonTrans.getJSONObject(i);
-            transactions.add(new Transaction(
-                    jsonT.getString("id"),
-                    jsonT.getString("depositAccount"),
-                    jsonT.getString("withdrawAccount"),
-                    jsonT.getString("timestamp"),
-                    BigDecimal.valueOf(jsonT.getDouble("amount")),
-                    jsonT.getString("currency")
-            ));
         }
-
         return transactions;
     }
 
