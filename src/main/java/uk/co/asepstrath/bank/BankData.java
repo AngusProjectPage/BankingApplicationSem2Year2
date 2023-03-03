@@ -27,7 +27,7 @@ public class BankData {
      * Check if API is available
      */
     public boolean getAPIStatus() {
-        return Unirest.get("http://api.asep-strath.co.uk/api/Team8/").asJson().getStatus() == 404; // success, API is online
+        return Unirest.get("http://api.asep-strath.co.uk/api/Team8/transactions?PageSize=0").asJson().getStatus() == 200; // success, API is online
     }
 
     /**
