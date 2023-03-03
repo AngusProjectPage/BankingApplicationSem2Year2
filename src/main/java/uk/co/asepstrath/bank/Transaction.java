@@ -1,5 +1,7 @@
 package uk.co.asepstrath.bank;
 
+import com.github.jknack.handlebars.internal.lang3.StringUtils;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -13,12 +15,13 @@ public class Transaction {
     private final String currency;
 
     public Transaction(String _id, String _depositAccount, String _withdrawAccount, String _timestamp, BigDecimal _amount, String _currency) {
-        this.id = _id;
-        this.depositAccount = _depositAccount;
-        this.withdrawAccount = _withdrawAccount;
-        this.timestamp = _timestamp;
+        // Limit string lengths to prevent SQL injection
+        this.id = StringUtils.left(_id, 36);
+        this.depositAccount = StringUtils.left(_depositAccount, 36);
+        this.withdrawAccount = StringUtils.left(_withdrawAccount, 36);
+        this.timestamp = StringUtils.left(_timestamp, 255);
         this.amount = _amount;
-        this.currency = _currency;
+        this.currency = StringUtils.left(_currency, 3);
     }
 
     public String getId() {return id;}
