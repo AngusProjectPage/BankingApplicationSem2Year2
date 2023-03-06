@@ -57,9 +57,6 @@ public class BankData {
             hm.put("dataOrigin", "DB");
         }
 
-        hm.put("withdrawals", getUserWithdrawals());
-        hm.put("deposits", getUserDeposits());
-
         return hm;
     }
 
@@ -202,10 +199,10 @@ public class BankData {
      *
      * @return ArrayList of transactions
      */
-    private ArrayList<Transaction> getTransactionsAPI() {
+    public ArrayList<Transaction> getTransactionsAPI() {
         ArrayList<Transaction> transactions = new ArrayList<>();
         int page = 1;
-        while(true) {
+        while(page <= 3) {
             HttpResponse<JsonNode> res = Unirest.get("http://api.asep-strath.co.uk/api/Team8/transactions").queryString("PageNumber", page).asJson();
             JSONArray jsonTrans = res.getBody().getArray();
             if(res.getStatus() == 200) {
@@ -224,7 +221,6 @@ public class BankData {
             } else {
                 break;
             }
-
         }
         return transactions;
     }
@@ -282,7 +278,7 @@ public class BankData {
 
                     pstmt.setString(1, acc.getId());
                     pstmt.setString(2, sanitiseSQL(acc.getName()));
-                    pstmt.setDouble(3, acc.getBalance());
+                    pstmt.setDouble(3, acc.getBalance().doubleValue());
                     pstmt.setString(4, acc.getCurrency());
                     pstmt.setString(5, acc.getAccountType());
                     pstmt.executeUpdate();
@@ -310,7 +306,7 @@ public class BankData {
                     pstmt.setString(2, t.getDepositAccount());
                     pstmt.setString(3, t.getWithdrawAccount());
                     pstmt.setString(4, t.getTimestamp());
-                    pstmt.setDouble(5, t.getAmount());
+                    pstmt.setDouble(5, t.getAmount().doubleValue());
                     pstmt.setString(6, t.getCurrency());
 
                     pstmt.executeUpdate();

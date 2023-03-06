@@ -177,14 +177,14 @@ class BankDataTests {
         Assertions.assertEquals("00000000-0000-0000-0000-000000000000", r.get(0).getDepositAccount());
         Assertions.assertEquals("11111111-1111-1111-1111-111111111111", r.get(0).getWithdrawAccount());
         Assertions.assertEquals("2020-01-01T00:00:00Z", r.get(0).getTimestamp());
-        Assertions.assertEquals(123.45, r.get(0).getAmount());
+        Assertions.assertEquals(123.45, r.get(0).getAmount().doubleValue());
         Assertions.assertEquals("GBP", r.get(0).getCurrency());
 
         Assertions.assertEquals("88888888-8888-8888-8888-888888888888", r.get(1).getId());
         Assertions.assertEquals("22222222-2222-2222-2222-222222222222", r.get(1).getDepositAccount());
         Assertions.assertEquals("33333333-3333-3333-3333-333333333333", r.get(1).getWithdrawAccount());
         Assertions.assertEquals("2020-01-01T00:00:00Z", r.get(1).getTimestamp());
-        Assertions.assertEquals(678.9, r.get(1).getAmount());
+        Assertions.assertEquals(678.9, r.get(1).getAmount().doubleValue());
         Assertions.assertEquals("USD", r.get(1).getCurrency());
     }
 
