@@ -89,7 +89,7 @@ public class BankData {
      *
      * @return ArrayList of accounts
      */
-    private ArrayList<Account> getAccountsAPI() {
+    public ArrayList<Account> getAccountsAPI() {
         HttpResponse<JsonNode> res = Unirest.get("http://api.asep-strath.co.uk/api/Team8/accounts").asJson();
         JSONArray jsonAccs = res.getBody().getArray();
         ArrayList<Account> accs = new ArrayList<>();
@@ -113,7 +113,7 @@ public class BankData {
      *
      * @return ArrayList of accounts
      */
-    private ArrayList<Account> getAccountsSQL() {
+    public ArrayList<Account> getAccountsSQL() {
 
         try (Connection connection = ds.getConnection()) {
             try (Statement stmt = connection.createStatement()) {
@@ -234,7 +234,7 @@ public class BankData {
      *
      * @return ArrayList of transactions
      */
-    private ArrayList<Transaction> getTransactionsSQL() {
+    public ArrayList<Transaction> getTransactionsSQL() {
         try (Connection connection = ds.getConnection()) {
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery("SELECT * FROM transactions");
@@ -255,7 +255,6 @@ public class BankData {
             log.error("Error getting transactions from SQL", e);
             return new ArrayList<>();
         }
-
     }
 
     /**
@@ -273,7 +272,7 @@ public class BankData {
      *
      * @param accs ArrayList of accounts
      */
-    private void postAccountsSQL(ArrayList<Account> accs) {
+    public void storeAccountsSQL(ArrayList<Account> accs) {
         try (Connection connection = ds.getConnection()) {
             try (Statement stmt = connection.createStatement()) {
                 stmt.execute("CREATE TABLE IF NOT EXISTS accounts (id VARCHAR(36) PRIMARY KEY, name VARCHAR(255), balance DOUBLE, currency VARCHAR(3), accountType VARCHAR(255))");
@@ -287,7 +286,6 @@ public class BankData {
                     pstmt.setString(4, acc.getCurrency());
                     pstmt.setString(5, acc.getAccountType());
                     pstmt.executeUpdate();
-
                 }
             }
         } catch (SQLException e) {
@@ -300,7 +298,7 @@ public class BankData {
      *
      * @param transactions ArrayList of transactions
      */
-    private void postTransactionsSQL(ArrayList<Transaction> transactions) {
+    public void storeTransactionsSQL(ArrayList<Transaction> transactions) {
         try (Connection connection = ds.getConnection()) {
             try (Statement stmt = connection.createStatement()) {
                 stmt.execute("CREATE TABLE IF NOT EXISTS transactions (id VARCHAR(36) PRIMARY KEY, depositAccount VARCHAR(36), withdrawAccount VARCHAR(36), timestamp VARCHAR(255), amount DOUBLE, currency VARCHAR(3))");
@@ -334,8 +332,8 @@ public class BankData {
         }
 
         // Get and store accounts/transactions
-        postAccountsSQL(getAccountsAPI());
-        postTransactionsSQL(getTransactionsAPI());
+        storeAccountsSQL(getAccountsAPI());
+        storeTransactionsSQL(getTransactionsAPI());
     }
 
 }
