@@ -131,6 +131,7 @@ public class BankData {
 
     public HashMap<String, Object> getAccountTransactionInfo(String id) {
         ArrayList<TransactionInfo> transactions = applyAllTransactions();
+
         HashMap<String, Object> hm = new HashMap<>();
         for(TransactionInfo transaction: transactions) {
             if(Objects.equals(transaction.getId(),id)) {
@@ -140,7 +141,6 @@ public class BankData {
         }
         return hm;
     }
-
 
     public ArrayList<TransactionInfo> applyAllTransactions() {
         ArrayList<TransactionInfo> transactionInfo = initialiseTransactionInfo();
@@ -154,28 +154,33 @@ public class BankData {
         Comparator<Transaction> timeStampComparator = Comparator.comparing(Transaction::getTimestamp);
         Collections.sort(allTransactions, timeStampComparator);
         // Find account associated with each transaction
-        for(Transaction t: allTransactions) {
+        for (Transaction t : allTransactions) {
             for (Account a : accounts) {
                 if (a.getId().equals(t.getWithdrawAccount())) {
                     withdrawAccount = a;
-                } else if (a.getId().equals(t.getWithdrawAccount())) {
+                } else if (a.getId().equals(t.getDepositAccount())) {
                     depositAccount = a;
                 }
             }
-            // Make transaction
-            if (withdrawAccount.getBalance().doubleValue() >= t.getAmount().doubleValue()) {
-                for(TransactionInfo transactions: transactionInfo) {
-                    if(Objects.equals(transactions.getId(), withdrawAccount.getId())) {
-                        BigDecimal newBalance = transactions.getBalanceAfter().subtract(t.getAmount());
-                        transactions.updateTransactionCount();
-                        transactions.setBalance(newBalance);
-
-                    } else if (Objects.equals(transactions.getId(), depositAccount.getId())) {
-                        BigDecimal newBalance = transactions.getBalanceAfter().subtract(t.getAmount());
-                        transactions.updateTransactionCount();
-                        transactions.setBalance(newBalance);
+            try {
+                if (withdrawAccount.getBalance().doubleValue() >= t.getAmount().doubleValue()) {
+                    BigDecimal newBalance;
+                    for (TransactionInfo transactions : transactionInfo) {
+                        if (Objects.equals(transactions.getId(), withdrawAccount.getId())) {
+                            newBalance = transactions.getBalanceAfter().subtract(t.getAmount());
+                            transactions.updateTransactionCount();
+                            transactions.setBalance(newBalance);
+                        }
+                        else if (Objects.equals(transactions.getId(), depositAccount.getId())) {
+                            newBalance = transactions.getBalanceAfter().add(t.getAmount());
+                            transactions.updateTransactionCount();
+                            transactions.setBalance(newBalance);
+                        } else {
+                            transactions.updateFailedTransactionCount();
+                        }
                     }
                 }
+            } catch(NullPointerException e) {
             }
         }
         return transactionInfo;
