@@ -10,9 +10,7 @@ import org.slf4j.Logger;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 public class BankData {
 
@@ -144,39 +142,81 @@ public class BankData {
         return intitalBalance;
     }
 
-    public BigDecimal accountFinalBalance(String userID) {
-        ArrayList<Transaction> accountWithdrawls = getAccountWithdrawals(userID);
-        ArrayList<Transaction> accountDeposits = getAccountDeposits(userID);
-        BigDecimal finalBalance = intialBalance(userID);
-        for(Transaction transaction: accountWithdrawls) {
-            finalBalance.subtract(transaction.getAmount());
-        }
-        for(Transaction transaction: accountDeposits) {
-            finalBalance.add(transaction.getAmount());
-        }
-        return finalBalance;
-    }
 
-    public ArrayList<Transaction> getAccountWithdrawals(String userID) {
-        ArrayList<Transaction> transactions = getTransactionsSQL();
-        ArrayList<Transaction> userWithdrawals = new ArrayList<>();
-        for(Transaction transaction: transactions) {
-            if(Objects.equals(transaction.getWithdrawAccount(), userID)) {
-                userWithdrawals.add(transaction);
+    public void applyAllTransactions() {
+        ArrayList<TransactionInfo> transactionInfo = initialiseTransactionInfo();
+        ArrayList<Transaction> allTransactions = getTransactionsSQL();
+        ArrayList<Account> accounts = getAccountsSQL();
+
+        Account withdrawAccount = null;
+        Account depositAccount = null;
+
+        // Sort transactions by timestamp
+        Comparator<Transaction> timeStampComparator = Comparator.comparing(Transaction::getTimestamp);
+        Collections.sort(allTransactions, timeStampComparator);
+        // Apply transactions to every account
+        for(Transaction t: allTransactions) {
+            for (Account a : accounts) {
+                if (a.getId().equals(t.getWithdrawAccount())) {
+                    withdrawAccount = a;
+                } else if (a.getId().equals(t.getWithdrawAccount())) {
+                    depositAccount = a;
+                }
+            }
+            // Make transaction
+            if (withdrawAccount.getBalance().doubleValue() >= t.getAmount().doubleValue()) {
+                for(TransactionInfo transactions: transactionInfo) {
+                    if(Objects.equals(transactions.getId(), withdrawAccount.getId())) {
+                        BigDecimal newBalance = transactions.getBalanceAfter().subtract(t.getAmount());
+                        transactions.updateTransactionCount();
+                        transactions.setBalance(newBalance);
+                    } else if (Objects.equals(transactions.getId(), depositAccount.getId())) {
+                        BigDecimal newBalance = transactions.getBalanceAfter().subtract(t.getAmount());
+                        transactions.updateTransactionCount();
+                        transactions.setBalance(newBalance);
+                    }
+                }
             }
         }
-            return userWithdrawals;
     }
 
-    public ArrayList<Transaction> getAccountDeposits(String userID) {
-        ArrayList<Transaction> transactions = getTransactionsSQL();
-        ArrayList<Transaction> userDeposits = new ArrayList<>();
-        for(Transaction transaction: transactions) {
-            if(Objects.equals(transaction.getDepositAccount(), userID)) {
-                userDeposits.add(transaction);
+   public ArrayList<TransactionInfo> initialiseTransactionInfo() {
+        ArrayList<TransactionInfo> allTransactions = new ArrayList<>();
+        ArrayList<Account> accounts = getAccountsSQL();
+        for(Account a: accounts) {
+            allTransactions.add(new TransactionInfo(a.getId(), a.getBalance()));
+        }
+        return allTransactions;
+    }
+
+
+    public BigDecimal getAccountFinalBalance(String userID) {
+        ArrayList<Transaction> accountTransactions = getAccountTransactions(userID);
+        BigDecimal currentBalance = intialBalance(userID);
+        // Sort all transactions by timestamp
+        Comparator<Transaction> timeStampComparator = Comparator.comparing(Transaction::getTimestamp);
+        Collections.sort(accountTransactions, timeStampComparator);
+        for(int i=0; i<accountTransactions.size(); i++) {
+            if(accountTransactions.get(i).getWithdrawAccount() == userID) {
+
+            } else {
+
             }
         }
-        return userDeposits;
+
+
+        return currentBalance;
+    }
+
+    public ArrayList<Transaction> getAccountTransactions(String userID) {
+        ArrayList<Transaction> transactions = getTransactionsSQL();
+        ArrayList<Transaction> accountTransactions = new ArrayList<>();
+        for(Transaction transaction: transactions) {
+            if(Objects.equals(transaction.getWithdrawAccount(), userID) || Objects.equals(transaction.getDepositAccount(), userID)) {
+                accountTransactions.add(transaction);
+            }
+        }
+            return accountTransactions;
     }
 
     /**
