@@ -21,7 +21,7 @@ class AccountTests {
         Account a = new Account();
         Assertions.assertNotNull(a.getId());
         Assertions.assertEquals("Default Account", a.getName());
-        Assertions.assertEquals(0, a.getBalance());
+        Assertions.assertEquals(0.00, a.getBalance().doubleValue());
         Assertions.assertEquals("GBP", a.getCurrency());
         Assertions.assertEquals("Current Account", a.getAccountType());
     }
@@ -31,7 +31,7 @@ class AccountTests {
     void AddingFunds(){
         Account a = new Account("John Smith", new BigDecimal(20));
         a.deposit(50);
-        Assertions.assertEquals(70,a.getBalance());
+        Assertions.assertEquals(70,a.getBalance().doubleValue());
     }
 
     @Test
@@ -39,7 +39,7 @@ class AccountTests {
     void SubtractFunds(){
         Account a = new Account("John Smith", new BigDecimal(40));
         a.withdraw(20);
-        Assertions.assertEquals(20,a.getBalance());
+        Assertions.assertEquals(20,a.getBalance().doubleValue());
     }
 
     @Test
@@ -59,7 +59,7 @@ class AccountTests {
         for(int j=0;j<3; j++){
             a.withdraw(20);
         }
-        Assertions.assertEquals(10,a.getBalance());
+        Assertions.assertEquals(10,a.getBalance().doubleValue());
     }
 
     @Test
@@ -67,7 +67,7 @@ class AccountTests {
     void DepositWithPennies(){
         Account a = new Account("John Smith", new BigDecimal("5.45"));
         a.deposit(17.56);
-        Assertions.assertEquals(23.01,a.getBalance());
+        Assertions.assertEquals(23.01,a.getBalance().doubleValue());
     }
 
     @Test
