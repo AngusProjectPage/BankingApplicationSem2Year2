@@ -14,6 +14,7 @@ public class Transaction {
     private final BigDecimal amount;
     private final String currency;
 
+
     public Transaction(String _id, String _depositAccount, String _withdrawAccount, String _timestamp, BigDecimal _amount, String _currency) {
         // Limit string lengths to prevent SQL injection
         this.id = StringUtils.left(_id, 36);

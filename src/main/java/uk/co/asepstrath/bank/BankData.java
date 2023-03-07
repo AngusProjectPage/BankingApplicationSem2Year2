@@ -111,7 +111,6 @@ public class BankData {
      * @return ArrayList of accounts
      */
     public ArrayList<Account> getAccountsSQL() {
-
         try (Connection connection = ds.getConnection()) {
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery("SELECT * FROM accounts");
@@ -145,20 +144,20 @@ public class BankData {
         return intitalBalance;
     }
 
-    public BigDecimal userFinalBalance(String userID) {
-        ArrayList<Transaction> userWithdrawls = getUserWithdrawals(userID);
-        ArrayList<Transaction> userDeposits = getUserDeposits(userID);
+    public BigDecimal accountFinalBalance(String userID) {
+        ArrayList<Transaction> accountWithdrawls = getAccountWithdrawals(userID);
+        ArrayList<Transaction> accountDeposits = getAccountDeposits(userID);
         BigDecimal finalBalance = intialBalance(userID);
-        for(Transaction transaction: userWithdrawls) {
+        for(Transaction transaction: accountWithdrawls) {
             finalBalance.subtract(transaction.getAmount());
         }
-        for(Transaction transaction: userDeposits) {
+        for(Transaction transaction: accountDeposits) {
             finalBalance.add(transaction.getAmount());
         }
         return finalBalance;
     }
 
-    public ArrayList<Transaction> getUserWithdrawals(String userID) {
+    public ArrayList<Transaction> getAccountWithdrawals(String userID) {
         ArrayList<Transaction> transactions = getTransactionsSQL();
         ArrayList<Transaction> userWithdrawals = new ArrayList<>();
         for(Transaction transaction: transactions) {
@@ -169,7 +168,7 @@ public class BankData {
             return userWithdrawals;
     }
 
-    public ArrayList<Transaction> getUserDeposits(String userID) {
+    public ArrayList<Transaction> getAccountDeposits(String userID) {
         ArrayList<Transaction> transactions = getTransactionsSQL();
         ArrayList<Transaction> userDeposits = new ArrayList<>();
         for(Transaction transaction: transactions) {
