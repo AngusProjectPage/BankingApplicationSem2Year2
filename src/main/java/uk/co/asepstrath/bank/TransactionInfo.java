@@ -1,7 +1,4 @@
 package uk.co.asepstrath.bank;
-
-import com.github.jknack.handlebars.internal.lang3.StringUtils;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -19,8 +16,8 @@ public class TransactionInfo {
         numTransactions = 0;
     }
     public String getId() {return id;}
-    public BigDecimal getBalanceBefore() {return balanceBefore;}
-    public BigDecimal getBalanceAfter() {return balanceAfter;}
+    public BigDecimal getBalanceBefore() {return balanceBefore.setScale(2, RoundingMode.HALF_UP);}
+    public BigDecimal getBalanceAfter() {return balanceAfter.setScale(2, RoundingMode.HALF_UP);}
     public int getNumTransactions() {return numTransactions;}
     public void updateTransactionCount() {
         numTransactions++;

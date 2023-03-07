@@ -54,7 +54,6 @@ public class BankData {
             }
             hm.put("dataOrigin", "DB");
         }
-
         return hm;
     }
 
@@ -99,7 +98,6 @@ public class BankData {
                     jsonAcc.getString("accountType")
             ));
         }
-
         return accs;
     }
 
@@ -131,19 +129,20 @@ public class BankData {
 
     }
 
-    public BigDecimal intialBalance(String userID) {
-        ArrayList<Account> accounts = getAccountsSQL();
-        BigDecimal intitalBalance = new BigDecimal(0);
-        for(int i=0; i<accounts.size(); i++) {
-            if(accounts.get(i).getId() == userID) {
-                intitalBalance = accounts.get(i).getBalance();
+    public HashMap<String, Object> getAccountTransactionInfo(String id) {
+        ArrayList<TransactionInfo> transactions = applyAllTransactions();
+        HashMap<String, Object> hm = new HashMap<>();
+        for(TransactionInfo transaction: transactions) {
+            if(Objects.equals(transaction.getId(),id)) {
+                hm.put("TransactionInfo", transaction);
+                break;
             }
         }
-        return intitalBalance;
+        return hm;
     }
 
 
-    public void applyAllTransactions() {
+    public ArrayList<TransactionInfo> applyAllTransactions() {
         ArrayList<TransactionInfo> transactionInfo = initialiseTransactionInfo();
         ArrayList<Transaction> allTransactions = getTransactionsSQL();
         ArrayList<Account> accounts = getAccountsSQL();
@@ -154,7 +153,7 @@ public class BankData {
         // Sort transactions by timestamp
         Comparator<Transaction> timeStampComparator = Comparator.comparing(Transaction::getTimestamp);
         Collections.sort(allTransactions, timeStampComparator);
-        // Apply transactions to every account
+        // Find account associated with each transaction
         for(Transaction t: allTransactions) {
             for (Account a : accounts) {
                 if (a.getId().equals(t.getWithdrawAccount())) {
@@ -170,6 +169,7 @@ public class BankData {
                         BigDecimal newBalance = transactions.getBalanceAfter().subtract(t.getAmount());
                         transactions.updateTransactionCount();
                         transactions.setBalance(newBalance);
+
                     } else if (Objects.equals(transactions.getId(), depositAccount.getId())) {
                         BigDecimal newBalance = transactions.getBalanceAfter().subtract(t.getAmount());
                         transactions.updateTransactionCount();
@@ -178,8 +178,11 @@ public class BankData {
                 }
             }
         }
+        return transactionInfo;
     }
 
+
+    // Adds an ID and initial balance for each TransactionInfo entry
    public ArrayList<TransactionInfo> initialiseTransactionInfo() {
         ArrayList<TransactionInfo> allTransactions = new ArrayList<>();
         ArrayList<Account> accounts = getAccountsSQL();
@@ -189,35 +192,6 @@ public class BankData {
         return allTransactions;
     }
 
-
-    public BigDecimal getAccountFinalBalance(String userID) {
-        ArrayList<Transaction> accountTransactions = getAccountTransactions(userID);
-        BigDecimal currentBalance = intialBalance(userID);
-        // Sort all transactions by timestamp
-        Comparator<Transaction> timeStampComparator = Comparator.comparing(Transaction::getTimestamp);
-        Collections.sort(accountTransactions, timeStampComparator);
-        for(int i=0; i<accountTransactions.size(); i++) {
-            if(accountTransactions.get(i).getWithdrawAccount() == userID) {
-
-            } else {
-
-            }
-        }
-
-
-        return currentBalance;
-    }
-
-    public ArrayList<Transaction> getAccountTransactions(String userID) {
-        ArrayList<Transaction> transactions = getTransactionsSQL();
-        ArrayList<Transaction> accountTransactions = new ArrayList<>();
-        for(Transaction transaction: transactions) {
-            if(Objects.equals(transaction.getWithdrawAccount(), userID) || Objects.equals(transaction.getDepositAccount(), userID)) {
-                accountTransactions.add(transaction);
-            }
-        }
-            return accountTransactions;
-    }
 
     /**
      * Get transactions from local database

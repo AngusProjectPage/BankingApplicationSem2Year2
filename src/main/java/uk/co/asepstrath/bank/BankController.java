@@ -19,7 +19,7 @@ public class BankController {
     @GET("/accounts")
     public ModelAndView viewAccounts(@QueryParam String id) {
        if(id != null) {
-           return new ModelAndView("account.hbs", data.getAccount(id));
+           return new ModelAndView("account.hbs", data.getAccountTransactionInfo(id));
         } else {
            return new ModelAndView("accounts.hbs", data.getAccounts());
         }
