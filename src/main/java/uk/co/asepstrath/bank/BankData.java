@@ -152,7 +152,7 @@ public class BankData {
 
         // Sort transactions by timestamp
         Comparator<Transaction> timeStampComparator = Comparator.comparing(Transaction::getTimestamp);
-        Collections.sort(allTransactions, timeStampComparator);
+        allTransactions.sort(timeStampComparator);
         // Find account associated with each transaction
         for (Transaction t : allTransactions) {
             for (Account a : accounts) {
@@ -180,7 +180,7 @@ public class BankData {
                         }
                     }
                 }
-            } catch(NullPointerException e) {
+            } catch(NullPointerException ignored) {
             }
         }
         return transactionInfo;
@@ -219,27 +219,21 @@ public class BankData {
      */
     public ArrayList<Transaction> getTransactionsAPI() {
         ArrayList<Transaction> transactions = new ArrayList<>();
-        int page = 1;
-        while(page <= 3) {
-            HttpResponse<JsonNode> res = Unirest.get("http://api.asep-strath.co.uk/api/Team8/transactions").queryString("PageNumber", page).asJson();
-            JSONArray jsonTrans = res.getBody().getArray();
-            if(res.getStatus() == 200) {
-                for (int i=0; i < jsonTrans.length(); i++) {
-                    JSONObject jsonT = jsonTrans.getJSONObject(i);
-                    transactions.add(new Transaction(
-                            jsonT.getString("id"),
-                            jsonT.getString("depositAccount"),
-                            jsonT.getString("withdrawAccount"),
-                            jsonT.getString("timestamp"),
-                            BigDecimal.valueOf(jsonT.getDouble("amount")),
-                            jsonT.getString("currency")
-                    ));
-                }
-                page++;
-            } else {
-                break;
-            }
+        HttpResponse<JsonNode> res = Unirest.get("http://api.asep-strath.co.uk/api/Team8/transactions").queryString("PageSize", 9999).asJson();
+        JSONArray jsonTrans = res.getBody().getArray();
+
+        for (int i=0; i < jsonTrans.length(); i++) {
+            JSONObject jsonT = jsonTrans.getJSONObject(i);
+            transactions.add(new Transaction(
+                    jsonT.getString("id"),
+                    jsonT.getString("depositAccount"),
+                    jsonT.getString("withdrawAccount"),
+                    jsonT.getString("timestamp"),
+                    BigDecimal.valueOf(jsonT.getDouble("amount")),
+                    jsonT.getString("currency")
+            ));
         }
+
         return transactions;
     }
 
