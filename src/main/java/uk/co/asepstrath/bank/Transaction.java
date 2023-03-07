@@ -3,7 +3,6 @@ package uk.co.asepstrath.bank;
 import com.github.jknack.handlebars.internal.lang3.StringUtils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 public class Transaction {
 
@@ -34,7 +33,7 @@ public class Transaction {
         return timestamp;
     }
     public BigDecimal getAmount() {
-        return this.amount.setScale(2, RoundingMode.HALF_UP);
+        return this.amount;
     }
     public String getCurrency() {
         return currency;
