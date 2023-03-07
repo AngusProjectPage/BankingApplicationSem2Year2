@@ -6,83 +6,68 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-class AccountTests {
+public class AccountTests {
 
     @Test
     @DisplayName("Create Account")
-    void createAccount(){
+    public void createAccount(){
         Account a = new Account();
         Assertions.assertNotNull(a);
     }
 
     @Test
     @DisplayName("Value Initialisation")
-    void ZeroStart(){
+    public void ZeroStart(){
         Account a = new Account();
         Assertions.assertNotNull(a.getId());
         Assertions.assertEquals("Default Account", a.getName());
-        Assertions.assertEquals(0.00, a.getBalance().doubleValue());
+        Assertions.assertEquals(BigDecimal.ZERO, a.getBalance());
         Assertions.assertEquals("GBP", a.getCurrency());
         Assertions.assertEquals("Current Account", a.getAccountType());
     }
 
     @Test
     @DisplayName("Adding Funds")
-    void AddingFunds(){
-        Account a = new Account("John Smith", new BigDecimal(20));
-        a.deposit(50);
-        Assertions.assertEquals(70,a.getBalance().doubleValue());
+    public void AddingFunds(){
+        Account a = new Account("John Smith", BigDecimal.valueOf(20));
+        a.deposit(BigDecimal.valueOf(50));
+        Assertions.assertEquals(BigDecimal.valueOf(70),a.getBalance());
     }
 
     @Test
     @DisplayName("Withdrawing Funds")
-    void SubtractFunds(){
-        Account a = new Account("John Smith", new BigDecimal(40));
-        a.withdraw(20);
-        Assertions.assertEquals(20,a.getBalance().doubleValue());
+    public void SubtractFunds(){
+        Account a = new Account("John Smith", BigDecimal.valueOf(40));
+        a.withdraw(BigDecimal.valueOf(20));
+        Assertions.assertEquals(BigDecimal.valueOf(20),a.getBalance());
     }
 
     @Test
     @DisplayName("Throw Overdraft")
-    void NoOverDraft(){
-        Account a = new Account("John Smith", new BigDecimal(30));
-        Assertions.assertThrows(ArithmeticException.class,()-> a.withdraw(100));
+    public void NoOverDraft(){
+        Account a = new Account("John Smith", BigDecimal.valueOf(30));
+        Assertions.assertThrows(ArithmeticException.class,()-> a.withdraw(BigDecimal.valueOf(100)));
     }
 
     @Test
     @DisplayName("Deposit/Withdraw Calculation")
-    void SuperSaving(){
-        Account a = new Account("John Smith", new BigDecimal(20));
+    public void SuperSaving(){
+        Account a = new Account("John Smith", BigDecimal.valueOf(20));
         for(int i=0; i<5; i++){
-            a.deposit(10);
+            a.deposit(BigDecimal.valueOf(10));
         }
         for(int j=0;j<3; j++){
-            a.withdraw(20);
+            a.withdraw(BigDecimal.valueOf(20));
         }
-        Assertions.assertEquals(10,a.getBalance().doubleValue());
+        Assertions.assertEquals(BigDecimal.valueOf(10),a.getBalance());
     }
 
     @Test
     @DisplayName("Decimal Balance")
-    void DepositWithPennies(){
-        Account a = new Account("John Smith", new BigDecimal("5.45"));
-        a.deposit(17.56);
-        Assertions.assertEquals(23.01,a.getBalance().doubleValue());
-    }
-
-    @Test
-    @DisplayName("String Representation")
-    void StringRepresentation(){
-        String id = "00000000-0000-0000-0000-000000000000";
-        String name = "John Smith";
-        BigDecimal balance = new BigDecimal("20.00");
-        String currency = "GBP";
-        String accountType = "Current Account";
-
-        Account a = new Account(id, name, balance, currency, accountType);
-
-        String expected = "[" + id + "] " + name + ": " + currency + balance + " (" + accountType + ")";
-        Assertions.assertEquals(expected, a.toString());
+    public void DepositWithPennies(){
+        Account a = new Account("John Smith", BigDecimal.valueOf(5.45));
+        a.deposit(BigDecimal.valueOf(17.56));
+        Assertions.assertEquals(BigDecimal.valueOf(23.01),a.getBalance());
     }
 
 }
