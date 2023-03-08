@@ -162,27 +162,48 @@ public class BankData {
                     depositAccount = a;
                 }
             }
-            try {
-                if (withdrawAccount.getBalance().doubleValue() >= t.getAmount().doubleValue()) {
-                    BigDecimal newBalance;
-                    for (TransactionInfo transactions : transactionInfo) {
-                        if (Objects.equals(transactions.getId(), withdrawAccount.getId())) {
-                            newBalance = transactions.getBalanceAfter().subtract(t.getAmount());
-                            transactions.updateTransactionCount();
-                            transactions.setBalance(newBalance);
-                        }
-                        else if (Objects.equals(transactions.getId(), depositAccount.getId())) {
-                            newBalance = transactions.getBalanceAfter().add(t.getAmount());
-                            transactions.updateTransactionCount();
-                            transactions.setBalance(newBalance);
-                        } else {
-                            transactions.updateFailedTransactionCount();
-                        }
-                    }
+
+            TransactionInfo withdrawInfo = null;
+            TransactionInfo depositInfo = null;
+
+            if (withdrawAccount != null) {
+                for (TransactionInfo ti : transactionInfo) {
+                    if (Objects.equals(ti.getId(), withdrawAccount.getId())) withdrawInfo = ti;
                 }
-            } catch(NullPointerException ignored) {
+
+                if (!(withdrawAccount.getBalance().compareTo(t.getAmount()) >= 0)) {
+
+                    withdrawInfo.updateFailedTransactionCount();
+
+                    if (depositAccount != null) {
+                        for (TransactionInfo ti : transactionInfo) {
+                            if (Objects.equals(ti.getId(), depositAccount.getId())) depositInfo = ti;
+                        }
+
+                        depositInfo.updateFailedTransactionCount();
+                    }
+
+                    continue;
+
+                } else {
+                    withdrawAccount.withdraw(t.getAmount());
+                    withdrawInfo.setBalance(withdrawAccount.getBalance());
+                    withdrawInfo.updateTransactionCount();
+                }
             }
+
+            if (depositAccount != null) {
+                for (TransactionInfo ti : transactionInfo) {
+                    if (Objects.equals(ti.getId(), depositAccount.getId())) depositInfo = ti;
+                }
+
+                depositAccount.deposit(t.getAmount());
+                depositInfo.setBalance(depositAccount.getBalance());
+                depositInfo.updateTransactionCount();
+            }
+
         }
+
         return transactionInfo;
     }
 
