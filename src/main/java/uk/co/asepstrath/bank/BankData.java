@@ -143,9 +143,9 @@ public class BankData {
     }
 
     public ArrayList<TransactionInfo> applyAllTransactions() {
-        ArrayList<TransactionInfo> transactionInfo = initialiseTransactionInfo();
-        ArrayList<Transaction> allTransactions = getTransactionsSQL();
         ArrayList<Account> accounts = getAccountsSQL();
+        ArrayList<Transaction> allTransactions = getTransactionsSQL();
+        ArrayList<TransactionInfo> transactionInfo = initialiseTransactionInfo(accounts);
 
         Account withdrawAccount = null;
         Account depositAccount = null;
@@ -209,9 +209,8 @@ public class BankData {
 
 
     // Adds an ID and initial balance for each TransactionInfo entry
-   public ArrayList<TransactionInfo> initialiseTransactionInfo() {
+   public ArrayList<TransactionInfo> initialiseTransactionInfo(ArrayList<Account> accounts) {
         ArrayList<TransactionInfo> allTransactions = new ArrayList<>();
-        ArrayList<Account> accounts = getAccountsSQL();
         for(Account a: accounts) {
             allTransactions.add(new TransactionInfo(a.getId(), a.getBalance()));
         }
