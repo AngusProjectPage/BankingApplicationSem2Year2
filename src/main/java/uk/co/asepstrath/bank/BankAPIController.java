@@ -1,5 +1,6 @@
 package uk.co.asepstrath.bank;
 
+import com.google.gson.Gson;
 import io.jooby.annotations.*;
 
 @Path("/api")
@@ -20,7 +21,7 @@ public class BankAPIController {
     @Produces("application/json")
     @GET("/accounts")
     public String getAccounts() {
-        return "[]"; // TODO: Implement (returns list of all accounts)
+        return new Gson().toJson(data.getAccounts());
     }
 
     @Produces("application/json")
@@ -32,7 +33,7 @@ public class BankAPIController {
     @Produces("application/json")
     @GET("/transactions")
     public String getTransactions() {
-        return "[]"; // TODO: Implement (returns list of all transactions)
+        return new Gson().toJson(data.getTransactions());
     }
 
     @Produces("application/json")
