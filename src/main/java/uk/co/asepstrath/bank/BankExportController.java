@@ -19,12 +19,12 @@ import java.util.List;
 @Path("/export")
 public class BankExportController {
 
-    private String[] getHeaders(JSONArray json) {
+    public String[] getHeaders(JSONArray json) {
         // Get header files for CSV; keys of JSON object
         return json.getJSONObject(0).keySet().toArray(new String[0]);
     }
 
-    private List<List<String>> getData(JSONArray json, String[] headers) {
+    public List<List<String>> getData(JSONArray json, String[] headers) {
         // Get data for CSV; values of JSON objects
         List<List<String>> data = new ArrayList<>();
 
@@ -39,7 +39,7 @@ public class BankExportController {
         return data;
     }
 
-    private ByteArrayInputStream generateCSV(JSONArray json) {
+    public ByteArrayInputStream generateCSV(JSONArray json) {
         String[] headers = getHeaders(json);
         List<List<String>> data = getData(json, headers);
 
