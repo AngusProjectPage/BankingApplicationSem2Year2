@@ -35,6 +35,7 @@ public class App extends Jooby {
 
         mvc(new BankController(data));
         mvc(new BankAPIController(data));
+        mvc(new BankExportController());
 
         /*
         Finally we register our application lifecycle methods

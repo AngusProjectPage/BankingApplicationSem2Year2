@@ -13,7 +13,7 @@ public class BankAPIController {
     }
 
     @Produces("application/json")
-    @GET
+    @GET("/")
     public String getRoot() {
         return "{}"; // Returns empty 200 OK
     }
