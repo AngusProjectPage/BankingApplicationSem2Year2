@@ -301,16 +301,6 @@ public class BankData {
     }
 
     /**
-     * Sanitise SQL string
-     *
-     * @param s String to sanitise
-     * @return Sanitised string
-     */
-    public String sanitiseSQL(String s) {
-        return s.replace("'", "''");
-    }
-
-    /**
      * Post accounts to local database
      *
      * @param accs ArrayList of accounts
@@ -324,7 +314,7 @@ public class BankData {
                     PreparedStatement pstmt = connection.prepareStatement("INSERT INTO accounts (id, name, balance, currency, accountType) VALUES (?, ?, ?, ?, ?)");
 
                     pstmt.setString(1, acc.getId());
-                    pstmt.setString(2, sanitiseSQL(acc.getName()));
+                    pstmt.setString(2, acc.getName());
                     pstmt.setDouble(3, acc.getBalance().doubleValue());
                     pstmt.setString(4, acc.getCurrency());
                     pstmt.setString(5, acc.getAccountType());
