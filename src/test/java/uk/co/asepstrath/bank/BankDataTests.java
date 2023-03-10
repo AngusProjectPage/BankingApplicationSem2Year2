@@ -171,6 +171,8 @@ class BankDataTests {
                 "{\"id\":\"88888888-8888-8888-8888-888888888888\",\"depositAccount\":\"22222222-2222-2222-2222-222222222222\",\"withdrawAccount\":\"33333333-3333-3333-3333-333333333333\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"amount\":678.9,\"currency\":\"USD\"}" +
                 "]");
 
+        mock.expect(HttpMethod.GET, "http://api.asep-strath.co.uk/api/Team8/fraud").thenReturn("[]");
+
 
         ArrayList<Transaction> r = bankData.getTransactionsAPI();
 
@@ -255,8 +257,8 @@ class BankDataTests {
         Mockito.when(conn.prepareStatement(Mockito.anyString())).thenReturn(pstmt);
 
         ArrayList<Transaction> transactions = new ArrayList<>();
-        transactions.add(new Transaction("99999999-9999-9999-9999-999999999999", "00000000-0000-0000-0000-000000000000", "11111111-1111-1111-1111-111111111111", "2020-01-01T00:00:00Z", BigDecimal.valueOf(123.45), "GBP"));
-        transactions.add(new Transaction("88888888-8888-8888-8888-888888888888", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", "2020-01-01T00:00:00Z", BigDecimal.valueOf(678.9), "USD"));
+        transactions.add(new Transaction("99999999-9999-9999-9999-999999999999", "00000000-0000-0000-0000-000000000000", "11111111-1111-1111-1111-111111111111", "2020-01-01T00:00:00Z", BigDecimal.valueOf(123.45), "GBP", false));
+        transactions.add(new Transaction("88888888-8888-8888-8888-888888888888", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", "2020-01-01T00:00:00Z", BigDecimal.valueOf(678.9), "USD", false));
 
         bankData.storeTransactionsSQL(transactions);
 
@@ -278,14 +280,6 @@ class BankDataTests {
         Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(6, "USD");
 
         Mockito.verify(pstmt, Mockito.times(2)).executeUpdate();
-    }
-
-    @Test
-    @DisplayName("Sanitise SQL")
-    void sanitiseSQL() {
-        BankData bankData = new BankData(ds, log);
-        String s = "'";
-        Assertions.assertEquals("''", bankData.sanitiseSQL(s));
     }
 
 }
