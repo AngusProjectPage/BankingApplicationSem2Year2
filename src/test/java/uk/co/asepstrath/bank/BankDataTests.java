@@ -171,8 +171,7 @@ class BankDataTests {
                 "{\"id\":\"88888888-8888-8888-8888-888888888888\",\"depositAccount\":\"22222222-2222-2222-2222-222222222222\",\"withdrawAccount\":\"33333333-3333-3333-3333-333333333333\",\"timestamp\":\"2020-01-01T00:00:00Z\",\"amount\":678.9,\"currency\":\"USD\"}" +
                 "]");
 
-        mock.expect(HttpMethod.GET, "http://api.asep-strath.co.uk/api/Team8/fraud").thenReturn("[]");
-
+        mock.expect(HttpMethod.GET, "http://api.asep-strath.co.uk/api/Team8/fraud").thenReturn("[\"88888888-8888-8888-8888-888888888888\"]");
 
         ArrayList<Transaction> r = bankData.getTransactionsAPI();
 
@@ -193,7 +192,7 @@ class BankDataTests {
         Assertions.assertEquals("2020-01-01T00:00:00Z", r.get(1).getTimestamp());
         Assertions.assertEquals(BigDecimal.valueOf(678.9), r.get(1).getAmount());
         Assertions.assertEquals("USD", r.get(1).getCurrency());
-        Assertions.assertFalse(r.get(1).isFraudulent());
+        Assertions.assertTrue(r.get(1).isFraudulent());
 
     }
 
@@ -213,7 +212,7 @@ class BankDataTests {
         Mockito.when(rs.getString("timestamp")).thenReturn("2020-01-01T00:00:00Z").thenReturn("2020-01-01T00:00:00Z");
         Mockito.when(rs.getDouble("amount")).thenReturn(123.45).thenReturn(678.9);
         Mockito.when(rs.getString("currency")).thenReturn("GBP").thenReturn("USD");
-        Mockito.when(rs.getBoolean("fraudulent")).thenReturn(false).thenReturn(false);
+        Mockito.when(rs.getBoolean("fraudulent")).thenReturn(false).thenReturn(true);
 
         ArrayList<Transaction> r = bankData.getTransactionsSQL();
 
@@ -234,7 +233,7 @@ class BankDataTests {
         Assertions.assertEquals("2020-01-01T00:00:00Z", r.get(1).getTimestamp());
         Assertions.assertEquals(BigDecimal.valueOf(678.9), r.get(1).getAmount());
         Assertions.assertEquals("USD", r.get(1).getCurrency());
-        Assertions.assertFalse(r.get(1).isFraudulent());
+        Assertions.assertTrue(r.get(1).isFraudulent());
 
     }
 
@@ -264,7 +263,7 @@ class BankDataTests {
 
         ArrayList<Transaction> transactions = new ArrayList<>();
         transactions.add(new Transaction("99999999-9999-9999-9999-999999999999", "00000000-0000-0000-0000-000000000000", "11111111-1111-1111-1111-111111111111", "2020-01-01T00:00:00Z", BigDecimal.valueOf(123.45), "GBP", false));
-        transactions.add(new Transaction("88888888-8888-8888-8888-888888888888", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", "2020-01-01T00:00:00Z", BigDecimal.valueOf(678.9), "USD", false));
+        transactions.add(new Transaction("88888888-8888-8888-8888-888888888888", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", "2020-01-01T00:00:00Z", BigDecimal.valueOf(678.9), "USD", true));
 
         bankData.storeTransactionsSQL(transactions);
 
@@ -277,6 +276,7 @@ class BankDataTests {
         Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(4, "2020-01-01T00:00:00Z");
         Mockito.verify(pstmt, Mockito.atLeastOnce()).setDouble(5, 123.45);
         Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(6, "GBP");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setBoolean(7, false);
 
         Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(1, "88888888-8888-8888-8888-888888888888");
         Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(2, "22222222-2222-2222-2222-222222222222");
@@ -284,6 +284,7 @@ class BankDataTests {
         Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(4, "2020-01-01T00:00:00Z");
         Mockito.verify(pstmt, Mockito.atLeastOnce()).setDouble(5, 678.9);
         Mockito.verify(pstmt, Mockito.atLeastOnce()).setString(6, "USD");
+        Mockito.verify(pstmt, Mockito.atLeastOnce()).setBoolean(7, true);
 
         Mockito.verify(pstmt, Mockito.times(2)).executeUpdate();
     }
