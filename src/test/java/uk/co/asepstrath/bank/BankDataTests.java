@@ -185,6 +185,7 @@ class BankDataTests {
         Assertions.assertEquals("2020-01-01T00:00:00Z", r.get(0).getTimestamp());
         Assertions.assertEquals(BigDecimal.valueOf(123.45), r.get(0).getAmount());
         Assertions.assertEquals("GBP", r.get(0).getCurrency());
+        Assertions.assertFalse(r.get(0).isFraudulent());
 
         Assertions.assertEquals("88888888-8888-8888-8888-888888888888", r.get(1).getId());
         Assertions.assertEquals("22222222-2222-2222-2222-222222222222", r.get(1).getDepositAccount());
@@ -192,6 +193,7 @@ class BankDataTests {
         Assertions.assertEquals("2020-01-01T00:00:00Z", r.get(1).getTimestamp());
         Assertions.assertEquals(BigDecimal.valueOf(678.9), r.get(1).getAmount());
         Assertions.assertEquals("USD", r.get(1).getCurrency());
+        Assertions.assertFalse(r.get(1).isFraudulent());
 
     }
 
@@ -211,6 +213,7 @@ class BankDataTests {
         Mockito.when(rs.getString("timestamp")).thenReturn("2020-01-01T00:00:00Z").thenReturn("2020-01-01T00:00:00Z");
         Mockito.when(rs.getDouble("amount")).thenReturn(123.45).thenReturn(678.9);
         Mockito.when(rs.getString("currency")).thenReturn("GBP").thenReturn("USD");
+        Mockito.when(rs.getBoolean("fraudulent")).thenReturn(false).thenReturn(false);
 
         ArrayList<Transaction> r = bankData.getTransactionsSQL();
 
@@ -223,6 +226,7 @@ class BankDataTests {
         Assertions.assertEquals("2020-01-01T00:00:00Z", r.get(0).getTimestamp());
         Assertions.assertEquals(BigDecimal.valueOf(123.45), r.get(0).getAmount());
         Assertions.assertEquals("GBP", r.get(0).getCurrency());
+        Assertions.assertFalse(r.get(0).isFraudulent());
 
         Assertions.assertEquals("88888888-8888-8888-8888-888888888888", r.get(1).getId());
         Assertions.assertEquals("22222222-2222-2222-2222-222222222222", r.get(1).getDepositAccount());
@@ -230,6 +234,8 @@ class BankDataTests {
         Assertions.assertEquals("2020-01-01T00:00:00Z", r.get(1).getTimestamp());
         Assertions.assertEquals(BigDecimal.valueOf(678.9), r.get(1).getAmount());
         Assertions.assertEquals("USD", r.get(1).getCurrency());
+        Assertions.assertFalse(r.get(1).isFraudulent());
+
     }
 
     @Test
