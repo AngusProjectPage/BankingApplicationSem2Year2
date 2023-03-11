@@ -171,7 +171,7 @@ public class BankData {
                     if (Objects.equals(ti.getId(), withdrawAccount.getId())) withdrawInfo = ti;
                 }
 
-                if (!(withdrawAccount.getBalance().compareTo(t.getAmount()) >= 0)) {
+                if (!(withdrawAccount.getBalance().compareTo(t.getAmount()) >= 0) || t.isFraudulent()) {
 
                     withdrawInfo.updateFailedTransactionCount();
 
@@ -195,6 +195,11 @@ public class BankData {
             if (depositAccount != null) {
                 for (TransactionInfo ti : transactionInfo) {
                     if (Objects.equals(ti.getId(), depositAccount.getId())) depositInfo = ti;
+                }
+
+                if (t.isFraudulent()) {
+                    depositInfo.updateFailedTransactionCount();
+                    continue;
                 }
 
                 depositAccount.deposit(t.getAmount());
@@ -242,6 +247,14 @@ public class BankData {
         HttpResponse<JsonNode> res = Unirest.get("http://api.asep-strath.co.uk/api/Team8/transactions").queryString("PageSize", 9999).asJson();
         JSONArray jsonTrans = res.getBody().getArray();
 
+        // get list of fraudulent transactions
+        HttpResponse<JsonNode> fraudRes = Unirest.get("http://api.asep-strath.co.uk/api/Team8/fraud").header("Accept", "application/json").asJson();
+        JSONArray jsonFraud = fraudRes.getBody().getArray();
+
+        ArrayList<String> fraudIds = new ArrayList<>();
+        for (int i = 0; i < jsonFraud.length(); i++)
+            fraudIds.add(jsonFraud.getString(i));
+
         for (int i=0; i < jsonTrans.length(); i++) {
             JSONObject jsonT = jsonTrans.getJSONObject(i);
             transactions.add(new Transaction(
@@ -250,7 +263,8 @@ public class BankData {
                     jsonT.getString("withdrawAccount"),
                     jsonT.getString("timestamp"),
                     BigDecimal.valueOf(jsonT.getDouble("amount")),
-                    jsonT.getString("currency")
+                    jsonT.getString("currency"),
+                    fraudIds.contains(jsonT.getString("id"))
             ));
         }
 
@@ -274,7 +288,8 @@ public class BankData {
                             rs.getString("withdrawAccount"),
                             rs.getString("timestamp"),
                             BigDecimal.valueOf(rs.getDouble("amount")),
-                            rs.getString("currency")
+                            rs.getString("currency"),
+                            rs.getBoolean("fraudulent")
                     ));
 
                 return transactions;
@@ -283,16 +298,6 @@ public class BankData {
             log.error("Error getting transactions from SQL", e);
             return new ArrayList<>();
         }
-    }
-
-    /**
-     * Sanitise SQL string
-     *
-     * @param s String to sanitise
-     * @return Sanitised string
-     */
-    public String sanitiseSQL(String s) {
-        return s.replace("'", "''");
     }
 
     /**
@@ -309,7 +314,7 @@ public class BankData {
                     PreparedStatement pstmt = connection.prepareStatement("INSERT INTO accounts (id, name, balance, currency, accountType) VALUES (?, ?, ?, ?, ?)");
 
                     pstmt.setString(1, acc.getId());
-                    pstmt.setString(2, sanitiseSQL(acc.getName()));
+                    pstmt.setString(2, acc.getName());
                     pstmt.setDouble(3, acc.getBalance().doubleValue());
                     pstmt.setString(4, acc.getCurrency());
                     pstmt.setString(5, acc.getAccountType());
@@ -329,10 +334,10 @@ public class BankData {
     public void storeTransactionsSQL(ArrayList<Transaction> transactions) {
         try (Connection connection = ds.getConnection()) {
             try (Statement stmt = connection.createStatement()) {
-                stmt.execute("CREATE TABLE IF NOT EXISTS transactions (id VARCHAR(36) PRIMARY KEY, depositAccount VARCHAR(36), withdrawAccount VARCHAR(36), timestamp VARCHAR(255), amount DOUBLE, currency VARCHAR(3))");
+                stmt.execute("CREATE TABLE IF NOT EXISTS transactions (id VARCHAR(36) PRIMARY KEY, depositAccount VARCHAR(36), withdrawAccount VARCHAR(36), timestamp VARCHAR(255), amount DOUBLE, currency VARCHAR(3), fraudulent BOOLEAN)");
                 for (Transaction t : transactions) {
 
-                    PreparedStatement pstmt = connection.prepareStatement("INSERT INTO transactions (id, depositAccount, withdrawAccount, timestamp, amount, currency) VALUES (?, ?, ?, ?, ?, ?)");
+                    PreparedStatement pstmt = connection.prepareStatement("INSERT INTO transactions (id, depositAccount, withdrawAccount, timestamp, amount, currency, fraudulent) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
                     pstmt.setString(1, t.getId());
                     pstmt.setString(2, t.getDepositAccount());
@@ -340,6 +345,7 @@ public class BankData {
                     pstmt.setString(4, t.getTimestamp());
                     pstmt.setDouble(5, t.getAmount().doubleValue());
                     pstmt.setString(6, t.getCurrency());
+                    pstmt.setBoolean(7, t.isFraudulent());
 
                     pstmt.executeUpdate();
 
