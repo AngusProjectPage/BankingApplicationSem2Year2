@@ -289,4 +289,76 @@ class BankDataTests {
         Mockito.verify(pstmt, Mockito.times(2)).executeUpdate();
     }
 
+    @Test
+    @DisplayName("Applying account transactions")
+    void applyingTransactions() {
+        BankData bankData = new BankData(ds, log);
+        Account acc1 = new Account("123456789", "John Michaels", new BigDecimal(2500.20), "GDP", "Savings account");
+        Account acc2 = new Account("987654321", "Mary Howard", new BigDecimal(4020.46), "TND", "ISA");
+        ArrayList<Account> accounts = new ArrayList<>();
+        accounts.add(acc1);
+        accounts.add(acc2);
+
+        Transaction trans1 = new Transaction("88448822", "123456789", "987654321", "2022-01-08T17:03:14.185726", new BigDecimal(844.52), "GDP", false);
+        ArrayList<Transaction> transactions = new ArrayList<>();
+        transactions.add(trans1);
+
+        TransactionInfo transInfo1 = new TransactionInfo(accounts.get(0).getId(), accounts.get(0).getBalance());
+        TransactionInfo transInfo2 = new TransactionInfo(accounts.get(1).getId(), accounts.get(1).getBalance());
+        ArrayList<TransactionInfo> transactionInfos = new ArrayList<>();
+        transactionInfos.add(transInfo1);
+        transactionInfos.add(transInfo2);
+
+
+        ArrayList<TransactionInfo> finalTransactionInfo = bankData.applyAllTransactions(accounts, transactions, transactionInfos);
+        TransactionInfo transaction1 = finalTransactionInfo.get(0);
+        TransactionInfo transaction2 = finalTransactionInfo.get(1);
+
+        // Regular transaction
+        Assertions.assertEquals("123456789", transaction1.getId());
+        Assertions.assertEquals("987654321", transaction2.getId());
+        Assertions.assertEquals(BigDecimal.valueOf(2500.20).setScale(2, BigDecimal.ROUND_HALF_EVEN), transaction1.getBalanceBefore());
+        Assertions.assertEquals(BigDecimal.valueOf(4020.46), transaction2.getBalanceBefore());
+        Assertions.assertEquals(BigDecimal.valueOf(3344.72), transaction1.getBalanceAfter());
+        Assertions.assertEquals(BigDecimal.valueOf(3175.94), transaction2.getBalanceAfter());
+        Assertions.assertEquals(1, transaction1.getNumTransactions());
+        Assertions.assertEquals(1, transaction2.getNumTransactions());
+        Assertions.assertEquals(0, transaction1.getFailedTransactions());
+        Assertions.assertEquals(0, transaction2.getFailedTransactions());
+
+        // Fraudulent transaction
+        Transaction trans2 = new Transaction("99112233", "123456789", "987654321", "2023-01-08T17:03:14.185726", new BigDecimal(1), "GDP", true);
+        transactions.add(trans2);
+        transInfo1 = new TransactionInfo(accounts.get(0).getId(), accounts.get(0).getBalance());
+        transInfo2 = new TransactionInfo(accounts.get(1).getId(), accounts.get(1).getBalance());
+        ArrayList<TransactionInfo> transactionInfos2 = new ArrayList<>();
+        transactionInfos2.add(transInfo1);
+        transactionInfos2.add(transInfo2);
+
+        ArrayList<TransactionInfo> finalTransactionInfo2 = bankData.applyAllTransactions(accounts, transactions, transactionInfos2);
+
+        transaction1 = finalTransactionInfo2.get(0);
+        transaction2 = finalTransactionInfo2.get(1);
+
+        Assertions.assertEquals("123456789", transaction1.getId());
+        Assertions.assertEquals("987654321", transaction2.getId());
+        Assertions.assertEquals(BigDecimal.valueOf(3344.72).setScale(2, BigDecimal.ROUND_HALF_EVEN), transaction1.getBalanceBefore());
+        Assertions.assertEquals(BigDecimal.valueOf(3175.94), transaction2.getBalanceBefore());
+        Assertions.assertEquals(BigDecimal.valueOf(4189.24), transaction1.getBalanceAfter());
+        Assertions.assertEquals(BigDecimal.valueOf(2331.42), transaction2.getBalanceAfter());
+        Assertions.assertEquals(1, transaction1.getNumTransactions());
+        Assertions.assertEquals(1, transaction2.getNumTransactions());
+        Assertions.assertEquals(1, transaction1.getFailedTransactions());
+        Assertions.assertEquals(1, transaction2.getFailedTransactions());
+
+    }
+    /*
+    static DataSource ds;
+    static Logger log;
+    static MockClient mc;
+    static Connection conn;
+    static Statement stmt;
+    static PreparedStatement pstmt;
+    static ResultSet rs;
+     */
 }

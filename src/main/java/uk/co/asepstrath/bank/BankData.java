@@ -130,7 +130,10 @@ public class BankData {
     }
 
     public HashMap<String, Object> getAccountTransactionInfo(String id) {
-        ArrayList<TransactionInfo> transactions = applyAllTransactions();
+        ArrayList<Account> accounts = getAccountsSQL();
+        ArrayList<Transaction> allTransactions = getTransactionsSQL();
+        ArrayList<TransactionInfo> transactionInfo = initialiseTransactionInfo(accounts);
+        ArrayList<TransactionInfo> transactions = applyAllTransactions(accounts, allTransactions, transactionInfo);
 
         HashMap<String, Object> hm = new HashMap<>();
         for(TransactionInfo transaction: transactions) {
@@ -142,10 +145,7 @@ public class BankData {
         return hm;
     }
 
-    public ArrayList<TransactionInfo> applyAllTransactions() {
-        ArrayList<Account> accounts = getAccountsSQL();
-        ArrayList<Transaction> allTransactions = getTransactionsSQL();
-        ArrayList<TransactionInfo> transactionInfo = initialiseTransactionInfo(accounts);
+    public ArrayList<TransactionInfo> applyAllTransactions(ArrayList<Account> accounts, ArrayList<Transaction> allTransactions, ArrayList<TransactionInfo> transactionInfo) {
 
         Account withdrawAccount = null;
         Account depositAccount = null;
