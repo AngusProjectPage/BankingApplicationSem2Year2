@@ -289,22 +289,24 @@ public class BankData {
 
                 if (!(withdrawAccount.getBalance().compareTo(t.getAmount()) >= 0) || t.isFraudulent()) {
 
-                    withdrawInfo.updateFailedTransactionCount();
+                    if (withdrawInfo != null) withdrawInfo.updateFailedTransactionCount();
 
                     if (depositAccount != null) {
                         for (TransactionInfo ti : transactionInfo) {
                             if (Objects.equals(ti.getId(), depositAccount.getId())) depositInfo = ti;
                         }
 
-                        depositInfo.updateFailedTransactionCount();
+                        if (depositInfo != null) depositInfo.updateFailedTransactionCount();
                     }
 
                     continue;
 
                 } else {
                     withdrawAccount.withdraw(t.getAmount());
-                    withdrawInfo.setBalance(withdrawAccount.getBalance());
-                    withdrawInfo.updateTransactionCount();
+                    if (withdrawInfo != null) {
+                        withdrawInfo.setBalance(withdrawAccount.getBalance());
+                        withdrawInfo.updateTransactionCount();
+                    }
                 }
             }
 
@@ -314,13 +316,15 @@ public class BankData {
                 }
 
                 if (t.isFraudulent()) {
-                    depositInfo.updateFailedTransactionCount();
+                    if (depositInfo != null) depositInfo.updateFailedTransactionCount();
                     continue;
                 }
 
                 depositAccount.deposit(t.getAmount());
-                depositInfo.setBalance(depositAccount.getBalance());
-                depositInfo.updateTransactionCount();
+                if (depositInfo != null) {
+                    depositInfo.setBalance(depositAccount.getBalance());
+                    depositInfo.updateTransactionCount();
+                }
             }
 
         }
