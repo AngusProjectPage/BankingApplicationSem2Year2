@@ -1,6 +1,6 @@
-# Your-Bank
+# Team 8 Banking Application
 
-Welcome to your-bank!!
+Banking application created by Team 8 for CS217: Agile Software Development in Practice (2023).
 
 ## running
 
