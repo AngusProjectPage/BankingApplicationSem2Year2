@@ -15,7 +15,7 @@ public class BankAPIController {
     @Produces("application/json")
     @GET("/")
     public String getRoot() {
-        return "{}"; // Returns empty 200 OK
+        return "{\"res\": \"OK!\"}"; // Returns empty 200 OK
     }
 
     @Produces("application/json")
