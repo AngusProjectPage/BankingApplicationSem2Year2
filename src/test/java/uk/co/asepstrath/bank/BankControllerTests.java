@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 
 import static org.mockito.Mockito.mock;
 
-public class BankControllerTests extends Jooby {
+class BankControllerTests extends Jooby {
 
     static DataSource ds;
     static Logger log;

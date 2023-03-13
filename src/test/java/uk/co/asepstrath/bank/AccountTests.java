@@ -6,18 +6,18 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-public class AccountTests {
+class AccountTests {
 
     @Test
     @DisplayName("Create Account")
-    public void createAccount(){
+    void createAccount(){
         Account a = new Account();
         Assertions.assertNotNull(a);
     }
 
     @Test
     @DisplayName("Value Initialisation")
-    public void ZeroStart(){
+    void ZeroStart(){
         Account a = new Account();
         Assertions.assertNotNull(a.getId());
         Assertions.assertEquals("Default Account", a.getName());
@@ -28,7 +28,7 @@ public class AccountTests {
 
     @Test
     @DisplayName("Adding Funds")
-    public void AddingFunds(){
+    void AddingFunds(){
         Account a = new Account("John Smith", BigDecimal.valueOf(20));
         a.deposit(BigDecimal.valueOf(50));
         Assertions.assertEquals(BigDecimal.valueOf(70),a.getBalance());
@@ -36,7 +36,7 @@ public class AccountTests {
 
     @Test
     @DisplayName("Withdrawing Funds")
-    public void SubtractFunds(){
+    void SubtractFunds(){
         Account a = new Account("John Smith", BigDecimal.valueOf(40));
         a.withdraw(BigDecimal.valueOf(20));
         Assertions.assertEquals(BigDecimal.valueOf(20),a.getBalance());
@@ -44,14 +44,14 @@ public class AccountTests {
 
     @Test
     @DisplayName("Throw Overdraft")
-    public void NoOverDraft(){
+    void NoOverDraft(){
         Account a = new Account("John Smith", BigDecimal.valueOf(30));
         Assertions.assertThrows(ArithmeticException.class,()-> a.withdraw(BigDecimal.valueOf(100)));
     }
 
     @Test
     @DisplayName("Deposit/Withdraw Calculation")
-    public void SuperSaving(){
+    void SuperSaving(){
         Account a = new Account("John Smith", BigDecimal.valueOf(20));
         for(int i=0; i<5; i++){
             a.deposit(BigDecimal.valueOf(10));
@@ -64,7 +64,7 @@ public class AccountTests {
 
     @Test
     @DisplayName("Decimal Balance")
-    public void DepositWithPennies(){
+    void DepositWithPennies(){
         Account a = new Account("John Smith", BigDecimal.valueOf(5.45));
         a.deposit(BigDecimal.valueOf(17.56));
         Assertions.assertEquals(BigDecimal.valueOf(23.01),a.getBalance());
