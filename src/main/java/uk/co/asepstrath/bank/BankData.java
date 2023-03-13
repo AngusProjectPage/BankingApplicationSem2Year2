@@ -224,6 +224,26 @@ public class BankData {
 
 
     /**
+     * Get transaction from DB by ID
+     * @param id ID of transaction
+     * @return HashMap containing transaction and data origin
+     */
+    public HashMap<String, Object> getTransaction(String id) {
+        HashMap<String, Object> hm = new HashMap<>();
+        ArrayList<Transaction> transactions = getTransactionsSQL();
+        for(Transaction t: transactions) {
+            if(Objects.equals(t.getId(),id)) {
+                hm.put("transaction", t);
+                break;
+            }
+        }
+
+        hm.put("dataOrigin", "DB");
+
+        return hm;
+    }
+
+    /**
      * Get transactions from local database
      *
      * @return HashMap containing transactions and data origin
