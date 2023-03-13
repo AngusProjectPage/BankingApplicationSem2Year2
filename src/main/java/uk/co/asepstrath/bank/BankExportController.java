@@ -88,7 +88,7 @@ public class BankExportController {
             return new ByteArrayInputStream("Account not found!".getBytes());
         }
 
-        JSONArray jsonAcc = jsonRes.getJSONArray("account");
+        JSONArray jsonAcc = new JSONArray().put(jsonRes.getJSONObject("account"));
 
         return generateCSV(jsonAcc);
     }
@@ -114,7 +114,7 @@ public class BankExportController {
             return new ByteArrayInputStream("Transaction not found!".getBytes());
         }
 
-        JSONArray jsonTran = jsonRes.getJSONArray("transaction");
+        JSONArray jsonTran = new JSONArray().put(jsonRes.getJSONObject("transaction"));
 
         return generateCSV(jsonTran);
     }

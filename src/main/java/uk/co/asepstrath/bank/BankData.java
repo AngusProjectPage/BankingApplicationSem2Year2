@@ -54,6 +54,10 @@ public class BankData {
             }
             hm.put("dataOrigin", "DB");
         }
+
+        hm.put("transactions", getAccountTransactions(id));
+        hm.put("transactionInfo", getAccountTransactionInfo(id));
+
         return hm;
     }
 
@@ -127,99 +131,6 @@ public class BankData {
             return new ArrayList<>();
         }
 
-    }
-
-    public HashMap<String, Object> getAccountTransactionInfo(String id) {
-        ArrayList<Account> accounts = getAccountsSQL();
-        ArrayList<Transaction> allTransactions = getTransactionsSQL();
-        ArrayList<TransactionInfo> transactionInfo = initialiseTransactionInfo(accounts);
-        ArrayList<TransactionInfo> transactions = applyAllTransactions(accounts, allTransactions, transactionInfo);
-
-        HashMap<String, Object> hm = new HashMap<>();
-        for(TransactionInfo transaction: transactions) {
-            if(Objects.equals(transaction.getId(),id)) {
-                hm.put("TransactionInfo", transaction);
-                break;
-            }
-        }
-        return hm;
-    }
-
-    public ArrayList<TransactionInfo> applyAllTransactions(ArrayList<Account> accounts, ArrayList<Transaction> allTransactions, ArrayList<TransactionInfo> transactionInfo) {
-
-        Account withdrawAccount = null;
-        Account depositAccount = null;
-
-        // Sort transactions by timestamp
-        Comparator<Transaction> timeStampComparator = Comparator.comparing(Transaction::getTimestamp);
-        allTransactions.sort(timeStampComparator);
-        // Find account associated with each transaction
-        for (Transaction t : allTransactions) {
-            for (Account a : accounts) {
-                if (a.getId().equals(t.getWithdrawAccount())) {
-                    withdrawAccount = a;
-                } else if (a.getId().equals(t.getDepositAccount())) {
-                    depositAccount = a;
-                }
-            }
-
-            TransactionInfo withdrawInfo = null;
-            TransactionInfo depositInfo = null;
-
-            if (withdrawAccount != null) {
-                for (TransactionInfo ti : transactionInfo) {
-                    if (Objects.equals(ti.getId(), withdrawAccount.getId())) withdrawInfo = ti;
-                }
-
-                if (!(withdrawAccount.getBalance().compareTo(t.getAmount()) >= 0) || t.isFraudulent()) {
-
-                    withdrawInfo.updateFailedTransactionCount();
-
-                    if (depositAccount != null) {
-                        for (TransactionInfo ti : transactionInfo) {
-                            if (Objects.equals(ti.getId(), depositAccount.getId())) depositInfo = ti;
-                        }
-
-                        depositInfo.updateFailedTransactionCount();
-                    }
-
-                    continue;
-
-                } else {
-                    withdrawAccount.withdraw(t.getAmount());
-                    withdrawInfo.setBalance(withdrawAccount.getBalance());
-                    withdrawInfo.updateTransactionCount();
-                }
-            }
-
-            if (depositAccount != null) {
-                for (TransactionInfo ti : transactionInfo) {
-                    if (Objects.equals(ti.getId(), depositAccount.getId())) depositInfo = ti;
-                }
-
-                if (t.isFraudulent()) {
-                    depositInfo.updateFailedTransactionCount();
-                    continue;
-                }
-
-                depositAccount.deposit(t.getAmount());
-                depositInfo.setBalance(depositAccount.getBalance());
-                depositInfo.updateTransactionCount();
-            }
-
-        }
-
-        return transactionInfo;
-    }
-
-
-    // Adds an ID and initial balance for each TransactionInfo entry
-   public ArrayList<TransactionInfo> initialiseTransactionInfo(ArrayList<Account> accounts) {
-        ArrayList<TransactionInfo> allTransactions = new ArrayList<>();
-        for(Account a: accounts) {
-            allTransactions.add(new TransactionInfo(a.getId(), a.getBalance()));
-        }
-        return allTransactions;
     }
 
 
@@ -321,6 +232,117 @@ public class BankData {
     }
 
     /**
+     * Get transactions for a specific account
+     * @param id ID of account
+     * @return ArrayList of transactions
+     */
+    public ArrayList<Transaction> getAccountTransactions(String id) {
+        ArrayList<Transaction> transactions = getTransactionsSQL();
+        ArrayList<Transaction> accountTransactions = new ArrayList<>();
+        for(Transaction t: transactions) {
+            if(Objects.equals(t.getDepositAccount(),id) || Objects.equals(t.getWithdrawAccount(),id)) {
+                accountTransactions.add(t);
+            }
+        }
+        return accountTransactions;
+    }
+
+    public TransactionInfo getAccountTransactionInfo(String id) {
+        ArrayList<Account> accounts = getAccountsSQL();
+        ArrayList<Transaction> allTransactions = getTransactionsSQL();
+        ArrayList<TransactionInfo> transactionInfo = initialiseTransactionInfo(accounts);
+        ArrayList<TransactionInfo> transactions = applyAllTransactions(accounts, allTransactions, transactionInfo);
+
+        for(TransactionInfo tInfo: transactions) {
+            if(Objects.equals(tInfo.getId(),id)) {
+                return tInfo;
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<TransactionInfo> applyAllTransactions(ArrayList<Account> accounts, ArrayList<Transaction> allTransactions, ArrayList<TransactionInfo> transactionInfo) {
+
+        Account withdrawAccount = null;
+        Account depositAccount = null;
+
+        // Sort transactions by timestamp
+        Comparator<Transaction> timeStampComparator = Comparator.comparing(Transaction::getTimestamp);
+        allTransactions.sort(timeStampComparator);
+        // Find account associated with each transaction
+        for (Transaction t : allTransactions) {
+            for (Account a : accounts) {
+                if (a.getId().equals(t.getWithdrawAccount())) {
+                    withdrawAccount = a;
+                } else if (a.getId().equals(t.getDepositAccount())) {
+                    depositAccount = a;
+                }
+            }
+
+            TransactionInfo withdrawInfo = null;
+            TransactionInfo depositInfo = null;
+
+            if (withdrawAccount != null) {
+                for (TransactionInfo ti : transactionInfo) {
+                    if (Objects.equals(ti.getId(), withdrawAccount.getId())) withdrawInfo = ti;
+                }
+
+                if (!(withdrawAccount.getBalance().compareTo(t.getAmount()) >= 0) || t.isFraudulent()) {
+
+                    if (withdrawInfo != null) withdrawInfo.updateFailedTransactionCount();
+
+                    if (depositAccount != null) {
+                        for (TransactionInfo ti : transactionInfo) {
+                            if (Objects.equals(ti.getId(), depositAccount.getId())) depositInfo = ti;
+                        }
+
+                        if (depositInfo != null) depositInfo.updateFailedTransactionCount();
+                    }
+
+                    continue;
+
+                } else {
+                    withdrawAccount.withdraw(t.getAmount());
+                    if (withdrawInfo != null) {
+                        withdrawInfo.setBalance(withdrawAccount.getBalance());
+                        withdrawInfo.updateTransactionCount();
+                    }
+                }
+            }
+
+            if (depositAccount != null) {
+                for (TransactionInfo ti : transactionInfo) {
+                    if (Objects.equals(ti.getId(), depositAccount.getId())) depositInfo = ti;
+                }
+
+                if (t.isFraudulent()) {
+                    if (depositInfo != null) depositInfo.updateFailedTransactionCount();
+                    continue;
+                }
+
+                depositAccount.deposit(t.getAmount());
+                if (depositInfo != null) {
+                    depositInfo.setBalance(depositAccount.getBalance());
+                    depositInfo.updateTransactionCount();
+                }
+            }
+
+        }
+
+        return transactionInfo;
+    }
+
+
+    // Adds an ID and initial balance for each TransactionInfo entry
+    public ArrayList<TransactionInfo> initialiseTransactionInfo(ArrayList<Account> accounts) {
+        ArrayList<TransactionInfo> allTransactions = new ArrayList<>();
+        for(Account a: accounts) {
+            allTransactions.add(new TransactionInfo(a.getId(), a.getBalance()));
+        }
+        return allTransactions;
+    }
+
+    /**
      * Post accounts to local database
      *
      * @param accs ArrayList of accounts
@@ -331,14 +353,17 @@ public class BankData {
                 stmt.execute("CREATE TABLE IF NOT EXISTS accounts (id VARCHAR(36) PRIMARY KEY, name VARCHAR(255), balance DOUBLE, currency VARCHAR(3), accountType VARCHAR(255))");
                 for (Account acc : accs) {
 
-                    PreparedStatement pstmt = connection.prepareStatement("INSERT INTO accounts (id, name, balance, currency, accountType) VALUES (?, ?, ?, ?, ?)");
+                    try (PreparedStatement pstmt = connection.prepareStatement("INSERT INTO accounts (id, name, balance, currency, accountType) VALUES (?, ?, ?, ?, ?)")) {
+                        pstmt.setString(1, acc.getId());
+                        pstmt.setString(2, acc.getName());
+                        pstmt.setDouble(3, acc.getBalance().doubleValue());
+                        pstmt.setString(4, acc.getCurrency());
+                        pstmt.setString(5, acc.getAccountType());
+                        pstmt.executeUpdate();
+                    } catch (SQLException e) {
+                        log.error("Error inserting account into SQL", e);
+                    }
 
-                    pstmt.setString(1, acc.getId());
-                    pstmt.setString(2, acc.getName());
-                    pstmt.setDouble(3, acc.getBalance().doubleValue());
-                    pstmt.setString(4, acc.getCurrency());
-                    pstmt.setString(5, acc.getAccountType());
-                    pstmt.executeUpdate();
                 }
             }
         } catch (SQLException e) {
@@ -357,17 +382,18 @@ public class BankData {
                 stmt.execute("CREATE TABLE IF NOT EXISTS transactions (id VARCHAR(36) PRIMARY KEY, depositAccount VARCHAR(36), withdrawAccount VARCHAR(36), timestamp VARCHAR(255), amount DOUBLE, currency VARCHAR(3), fraudulent BOOLEAN)");
                 for (Transaction t : transactions) {
 
-                    PreparedStatement pstmt = connection.prepareStatement("INSERT INTO transactions (id, depositAccount, withdrawAccount, timestamp, amount, currency, fraudulent) VALUES (?, ?, ?, ?, ?, ?, ?)");
-
-                    pstmt.setString(1, t.getId());
-                    pstmt.setString(2, t.getDepositAccount());
-                    pstmt.setString(3, t.getWithdrawAccount());
-                    pstmt.setString(4, t.getTimestamp());
-                    pstmt.setDouble(5, t.getAmount().doubleValue());
-                    pstmt.setString(6, t.getCurrency());
-                    pstmt.setBoolean(7, t.isFraudulent());
-
-                    pstmt.executeUpdate();
+                    try (PreparedStatement pstmt = connection.prepareStatement("INSERT INTO transactions (id, depositAccount, withdrawAccount, timestamp, amount, currency, fraudulent) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
+                        pstmt.setString(1, t.getId());
+                        pstmt.setString(2, t.getDepositAccount());
+                        pstmt.setString(3, t.getWithdrawAccount());
+                        pstmt.setString(4, t.getTimestamp());
+                        pstmt.setDouble(5, t.getAmount().doubleValue());
+                        pstmt.setString(6, t.getCurrency());
+                        pstmt.setBoolean(7, t.isFraudulent());
+                        pstmt.executeUpdate();
+                    } catch (SQLException e) {
+                        log.error("Error inserting transaction into SQL", e);
+                    }
 
                 }
             }
