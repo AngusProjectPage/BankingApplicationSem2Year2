@@ -39,7 +39,7 @@ public class BankControllerTests extends Jooby {
     @DisplayName("View Accounts")
     void viewAccounts() {
         BankController bankController = new BankController(data);
-        ModelAndView mav = bankController.viewAccounts(null);
+        ModelAndView mav = bankController.viewAccounts();
         Assertions.assertNotNull(mav.getModel().get("accounts"));
         Assertions.assertNotNull(mav.getModel().get("dataOrigin"));
     }
@@ -48,7 +48,7 @@ public class BankControllerTests extends Jooby {
     @DisplayName("View Transactions")
     void viewTransactions() {
         BankController bankController = new BankController(data);
-        ModelAndView mav = bankController.viewTransactionInformation();
+        ModelAndView mav = bankController.viewTransactions();
         Assertions.assertNotNull(mav.getModel().get("transactions"));
         Assertions.assertNotNull(mav.getModel().get("transactionTotal"));
         Assertions.assertNotNull(mav.getModel().get("dataOrigin"));

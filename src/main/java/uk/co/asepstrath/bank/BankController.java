@@ -13,19 +13,23 @@ public class BankController {
     }
 
     @GET("/accounts")
-    public ModelAndView viewAccounts(@QueryParam String id) {
-       if(id != null) {
-           return new ModelAndView("account.hbs", data.getAccountTransactionInfo(id));
-        } else {
-           return new ModelAndView("accounts.hbs", data.getAccounts());
-        }
+    public ModelAndView viewAccounts() {
+       return new ModelAndView("accounts.hbs", data.getAccounts());
+    }
+
+    @GET("/accounts/{id}")
+    public ModelAndView viewAccount(@PathParam String id) {
+        return new ModelAndView("account.hbs", data.getAccount(id));
     }
 
     @GET ("/transactions")
-    public ModelAndView viewTransactionInformation() {
+    public ModelAndView viewTransactions() {
         return new ModelAndView("transactions.hbs", data.getTransactions());
     }
 
-
+    @GET ("/transactions/{id}")
+    public ModelAndView viewTransaction(@PathParam String id) {
+        return new ModelAndView("transaction.hbs", data.getTransaction(id));
+    }
 
 }

@@ -111,12 +111,54 @@ h2 {
 </head>
 <body>
 <main class="container">
-    <h2 class="secondary-header">Account: {{TransactionInfo.id}}</h2>
+    <h1 class="main-header">Account Info</h1>
+    <div class="container">
+        {{#with account}}
+            <h2 class="secondary-header">Account: {{id}}</h2>
+            <h2 class="secondary-header">Name: {{name}}</h2>
+            <h2 class="secondary-header">Currency: {{currency}}</h2>
+            <h2 class="secondary-header">Account Type: {{accountType}}</h2>
+        {{/with}}
+    </div>
+
+    <h1 class="main-header">Transaction Info</h1>
     <div class="grid">
-        <div class="balance-box"><h2 class="sub-header">Initial Balance</h2> <p class="amount">{{TransactionInfo.balanceBefore}}</p></div>
-        <div class="balance-box"><h2 class="sub-header">Current Balance</h2><p class="amount">{{TransactionInfo.balanceAfter}}</p></div>
-        <div class="balance-box"><h2 class="sub-header">Successful Transactions</h2><p class="amount">{{TransactionInfo.numTransactions}}</p></div>
-        <div class="balance-box"><h2 class="sub-header">Failed Transactions</h2><p class="amount">{{TransactionInfo.failedTransactions}}</p></div>
+        {{#with transactionInfo}}
+        <div class="balance-box"><h2 class="sub-header">Initial Balance</h2> <p class="amount">{{balanceBefore}}</p></div>
+        <div class="balance-box"><h2 class="sub-header">Current Balance</h2><p class="amount">{{balanceAfter}}</p></div>
+        <div class="balance-box"><h2 class="sub-header">Successful Transactions</h2><p class="amount">{{numTransactions}}</p></div>
+        <div class="balance-box"><h2 class="sub-header">Failed Transactions</h2><p class="amount">{{failedTransactions}}</p></div>
+        {{/with}}
+    </div>
+
+    <h1 class="main-header">Transactions</h1>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Deposit Acc.</th>
+                    <th>Withdraw Acc.</th>
+                    <th>Timestamp</th>
+                    <th>Amount</th>
+                    <th>Currency</th>
+                    <th>Fraudulent</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#transactions}}
+                <tr>
+                    <td>{{id}}</td>
+                    <td><a href="accounts/{{depositAccount}}">{{depositAccount}}</a></td>
+                    <td><a href="accounts/{{depositAccount}}">{{withdrawAccount}}</a></td>
+                    <td>{{timestamp}}</td>
+                    <td>{{amount}}</td>
+                    <td>{{currency}}</td>
+                    <td>{{fraudulent}}</td>
+                </tr>
+                {{/transactions}}
+            </tbody>
+        </table>
     </div>
 </main>
 </body>
