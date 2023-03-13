@@ -30,6 +30,14 @@ public class BankController {
         return new ModelAndView("transactions.hbs", data.getTransactions());
     }
 
+    @POST ("/reversal")
+    public void transactionReversal(@QueryParam String transactionID) {
+        if(transactionID != null) {
+            data.transactionReversal(transactionID);
+        } else {
+            System.out.println("Please enter a transaction to reverse in the url");
+        }
+    }
 
 
 }

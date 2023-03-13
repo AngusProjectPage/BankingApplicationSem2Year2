@@ -222,25 +222,37 @@ public class BankData {
         return allTransactions;
     }
 
-    public void transactionReversal(Transaction transaction) {
+    // Reverse a transaction through the query parameter in url
+    public void transactionReversal(String transactionNo) {
         //"transaction": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         //"timestamp": "2023-03-12T14:41:35.312Z"
-        String transactionNo = transaction.getId();
-        String timestamp = transaction.getTimestamp();
-        HashMap<String, String> transactionPostFormat = new HashMap<>();
-        transactionPostFormat.put("transaction", transactionNo);
-        transactionPostFormat.put("timestamp", timestamp);
-        JSONObject jsonTransaction = new JSONObject(transactionPostFormat);
-        HttpResponse<JsonNode> jsonResponse
-                = Unirest.post("http://api.asep-strath.co.uk/api/Team8/reversal")
-                .body(jsonTransaction)
-                .asJson();
-        if(jsonResponse.getStatus() == 200) {
-            System.out.println("Transaction Successfully reversed");
-        } else if(jsonResponse.getStatus() == 400) {
-            System.out.println("An error has occurred");
+        Transaction foundTransaction = null;
+        ArrayList<Transaction> transactions = getTransactionsSQL();
+        for(Transaction transaction: transactions) {
+            if(Objects.equals(transaction.getId(), transactionNo)) {
+                foundTransaction = transaction;
+                break;
+            }
+        }
+        if(foundTransaction == null) {
+            System.out.println("Transaction number doesn't exist");
         } else {
-            System.out.println("Bank not found");
+            String timestamp = foundTransaction.getTimestamp();
+            HashMap<String, String> transactionPostFormat = new HashMap<>();
+            transactionPostFormat.put("transaction", transactionNo);
+            transactionPostFormat.put("timestamp", timestamp);
+            JSONObject jsonTransaction = new JSONObject(transactionPostFormat);
+            HttpResponse<JsonNode> jsonResponse
+                    = Unirest.post("http://api.asep-strath.co.uk/api/Team8/reversal")
+                    .body(jsonTransaction)
+                    .asJson();
+            if(jsonResponse.getStatus() == 200) {
+                System.out.println("Transaction Successfully reversed");
+            } else if(jsonResponse.getStatus() == 400) {
+                System.out.println("An error has occurred");
+            } else {
+                System.out.println("Bank not found");
+            }
         }
     }
 
