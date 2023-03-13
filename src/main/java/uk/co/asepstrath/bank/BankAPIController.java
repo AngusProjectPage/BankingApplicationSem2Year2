@@ -27,7 +27,7 @@ public class BankAPIController {
     @Produces("application/json")
     @GET("/accounts/{id}")
     public String getAccount(@PathParam String id) {
-        return new Gson().toJson(data.getAccount(id)); // TODO: Return transactions associated with account
+        return new Gson().toJson(data.getAccount(id));
     }
 
     @Produces("application/json")
