@@ -3,7 +3,6 @@ package uk.co.asepstrath.bank;
 import com.github.jknack.handlebars.internal.lang3.StringUtils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.UUID;
 
 public class Account {
@@ -30,24 +29,26 @@ public class Account {
 
     public String getName() { return name; }
 
-    public double getBalance() { return this.balance.setScale(2, RoundingMode.HALF_UP).doubleValue(); }
+    public BigDecimal getBalance() { return this.balance; }
 
     public String getCurrency() { return currency; }
 
     public String getAccountType() { return accountType; }
 
-    public void deposit(double amount) {
-        this.balance = this.balance.add(new BigDecimal(amount));
+    public void deposit(BigDecimal amount) {
+        this.balance = this.balance.add(amount);
     }
 
-    public void withdraw(double amount){
-        BigDecimal amountBD = new BigDecimal(amount);
-        if(amount > 0 && this.balance.compareTo(amountBD) >= 0){
-            this.balance = this.balance.subtract(amountBD);
+    public void withdraw(BigDecimal amount) throws ArithmeticException {
+        if (amount.compareTo(BigDecimal.ZERO) < 0) {
+            throw new ArithmeticException("Cannot withdraw negative amount: " + amount + " From Account.");
         }
-        else{
-            throw new ArithmeticException("Cannot withdraw amount: "+ amount + " From Account.");
+
+        if (this.balance.compareTo(amount) < 0) {
+            throw new ArithmeticException("Cannot withdraw amount: " + amount + " From Account.");
         }
+
+        this.balance = this.balance.subtract(amount);
     }
 
     @Override

@@ -39,7 +39,7 @@ public class BankControllerTests extends Jooby {
     @DisplayName("View Accounts")
     void viewAccounts() {
         BankController bankController = new BankController(data);
-        ModelAndView mav = bankController.viewAccounts();
+        ModelAndView mav = bankController.viewAccounts(null);
         Assertions.assertNotNull(mav.getModel().get("accounts"));
         Assertions.assertNotNull(mav.getModel().get("dataOrigin"));
     }

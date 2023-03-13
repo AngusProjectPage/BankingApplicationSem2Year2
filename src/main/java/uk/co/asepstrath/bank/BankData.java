@@ -10,8 +10,7 @@ import org.slf4j.Logger;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class BankData {
 
@@ -29,6 +28,35 @@ public class BankData {
     public boolean getAPIStatus() {
         return Unirest.get("http://api.asep-strath.co.uk/api/Team8/transactions?PageSize=0").asJson().getStatus() == 200; // success, API is online
     }
+
+    public HashMap<String, Object> getAccount(String id) {
+        HashMap<String, Object> hm = new HashMap<>();
+
+        // Check if API is available, if not, use local database
+        if (getAPIStatus()) {
+            //hm.put("accounts", getAccountsAPI());
+            ArrayList<Account> accs = getAccountsAPI();
+            for (Account acc : accs) {
+                if (Objects.equals(acc.getId(), id)) {
+                    hm.put("account", acc);
+                    break;
+                }
+            }
+            hm.put("dataOrigin", "API");
+        } else {
+            //hm.put("accounts", getAccountsSQL());
+            ArrayList<Account> accs = getAccountsSQL();
+            for (Account acc : accs) {
+                if (Objects.equals(acc.getId(), id)) {
+                    hm.put("account", acc);
+                    break;
+                }
+            }
+            hm.put("dataOrigin", "DB");
+        }
+        return hm;
+    }
+
 
     /**
      * Get accounts from API or local database
@@ -70,7 +98,6 @@ public class BankData {
                     jsonAcc.getString("accountType")
             ));
         }
-
         return accs;
     }
 
@@ -80,7 +107,6 @@ public class BankData {
      * @return ArrayList of accounts
      */
     public ArrayList<Account> getAccountsSQL() {
-
         try (Connection connection = ds.getConnection()) {
             try (Statement stmt = connection.createStatement()) {
                 ResultSet rs = stmt.executeQuery("SELECT * FROM accounts");
@@ -103,27 +129,131 @@ public class BankData {
 
     }
 
+    public HashMap<String, Object> getAccountTransactionInfo(String id) {
+        ArrayList<Account> accounts = getAccountsSQL();
+        ArrayList<Transaction> allTransactions = getTransactionsSQL();
+        ArrayList<TransactionInfo> transactionInfo = initialiseTransactionInfo(accounts);
+        ArrayList<TransactionInfo> transactions = applyAllTransactions(accounts, allTransactions, transactionInfo);
+
+        HashMap<String, Object> hm = new HashMap<>();
+        for(TransactionInfo transaction: transactions) {
+            if(Objects.equals(transaction.getId(),id)) {
+                hm.put("TransactionInfo", transaction);
+                break;
+            }
+        }
+        return hm;
+    }
+
+    public ArrayList<TransactionInfo> applyAllTransactions(ArrayList<Account> accounts, ArrayList<Transaction> allTransactions, ArrayList<TransactionInfo> transactionInfo) {
+
+        Account withdrawAccount = null;
+        Account depositAccount = null;
+
+        // Sort transactions by timestamp
+        Comparator<Transaction> timeStampComparator = Comparator.comparing(Transaction::getTimestamp);
+        allTransactions.sort(timeStampComparator);
+        // Find account associated with each transaction
+        for (Transaction t : allTransactions) {
+            for (Account a : accounts) {
+                if (a.getId().equals(t.getWithdrawAccount())) {
+                    withdrawAccount = a;
+                } else if (a.getId().equals(t.getDepositAccount())) {
+                    depositAccount = a;
+                }
+            }
+
+            TransactionInfo withdrawInfo = null;
+            TransactionInfo depositInfo = null;
+
+            if (withdrawAccount != null) {
+                for (TransactionInfo ti : transactionInfo) {
+                    if (Objects.equals(ti.getId(), withdrawAccount.getId())) withdrawInfo = ti;
+                }
+
+                if (!(withdrawAccount.getBalance().compareTo(t.getAmount()) >= 0) || t.isFraudulent()) {
+
+                    withdrawInfo.updateFailedTransactionCount();
+
+                    if (depositAccount != null) {
+                        for (TransactionInfo ti : transactionInfo) {
+                            if (Objects.equals(ti.getId(), depositAccount.getId())) depositInfo = ti;
+                        }
+
+                        depositInfo.updateFailedTransactionCount();
+                    }
+
+                    continue;
+
+                } else {
+                    withdrawAccount.withdraw(t.getAmount());
+                    withdrawInfo.setBalance(withdrawAccount.getBalance());
+                    withdrawInfo.updateTransactionCount();
+                }
+            }
+
+            if (depositAccount != null) {
+                for (TransactionInfo ti : transactionInfo) {
+                    if (Objects.equals(ti.getId(), depositAccount.getId())) depositInfo = ti;
+                }
+
+                if (t.isFraudulent()) {
+                    depositInfo.updateFailedTransactionCount();
+                    continue;
+                }
+
+                depositAccount.deposit(t.getAmount());
+                depositInfo.setBalance(depositAccount.getBalance());
+                depositInfo.updateTransactionCount();
+            }
+
+        }
+
+        return transactionInfo;
+    }
+
+
+    // Adds an ID and initial balance for each TransactionInfo entry
+   public ArrayList<TransactionInfo> initialiseTransactionInfo(ArrayList<Account> accounts) {
+        ArrayList<TransactionInfo> allTransactions = new ArrayList<>();
+        for(Account a: accounts) {
+            allTransactions.add(new TransactionInfo(a.getId(), a.getBalance()));
+        }
+        return allTransactions;
+    }
+
+
     /**
-     * Get transactions from API or local database
+     * Get transaction from DB by ID
+     * @param id ID of transaction
+     * @return HashMap containing transaction and data origin
+     */
+    public HashMap<String, Object> getTransaction(String id) {
+        HashMap<String, Object> hm = new HashMap<>();
+        ArrayList<Transaction> transactions = getTransactionsSQL();
+        for(Transaction t: transactions) {
+            if(Objects.equals(t.getId(),id)) {
+                hm.put("transaction", t);
+                break;
+            }
+        }
+
+        hm.put("dataOrigin", "DB");
+
+        return hm;
+    }
+
+    /**
+     * Get transactions from local database
      *
      * @return HashMap containing transactions and data origin
      */
     public HashMap<String, Object> getTransactions() {
         HashMap<String, Object> hm = new HashMap<>();
-
-        // Check if API is available, if not, use local database
-        if (getAPIStatus()) {
-            ArrayList<Transaction> transactions = getTransactionsAPI();
-            hm.put("transactions", transactions);
-            hm.put("transactionTotal", transactions.size());
-            hm.put("dataOrigin", "API");
-        } else {
-            ArrayList<Transaction> transactions = getTransactionsSQL();
-            hm.put("transactions", transactions);
-            if (transactions != null) hm.put("transactionTotal", transactions.size());
-            hm.put("dataOrigin", "DB");
-        }
-
+        ArrayList<Transaction> transactions = getTransactionsSQL();
+        hm.put("transactions", transactions);
+        if (transactions != null) hm.put("transactionTotal", transactions.size());
+        hm.put("dataOrigin", "DB");
         return hm;
     }
 
@@ -133,9 +263,17 @@ public class BankData {
      * @return ArrayList of transactions
      */
     public ArrayList<Transaction> getTransactionsAPI() {
-        HttpResponse<JsonNode> res = Unirest.get("http://api.asep-strath.co.uk/api/Team8/transactions").asJson();
-        JSONArray jsonTrans = res.getBody().getArray();
         ArrayList<Transaction> transactions = new ArrayList<>();
+        HttpResponse<JsonNode> res = Unirest.get("http://api.asep-strath.co.uk/api/Team8/transactions").queryString("PageSize", 9999).asJson();
+        JSONArray jsonTrans = res.getBody().getArray();
+
+        // get list of fraudulent transactions
+        HttpResponse<JsonNode> fraudRes = Unirest.get("http://api.asep-strath.co.uk/api/Team8/fraud").header("Accept", "application/json").asJson();
+        JSONArray jsonFraud = fraudRes.getBody().getArray();
+
+        ArrayList<String> fraudIds = new ArrayList<>();
+        for (int i = 0; i < jsonFraud.length(); i++)
+            fraudIds.add(jsonFraud.getString(i));
 
         for (int i=0; i < jsonTrans.length(); i++) {
             JSONObject jsonT = jsonTrans.getJSONObject(i);
@@ -145,7 +283,8 @@ public class BankData {
                     jsonT.getString("withdrawAccount"),
                     jsonT.getString("timestamp"),
                     BigDecimal.valueOf(jsonT.getDouble("amount")),
-                    jsonT.getString("currency")
+                    jsonT.getString("currency"),
+                    fraudIds.contains(jsonT.getString("id"))
             ));
         }
 
@@ -169,7 +308,8 @@ public class BankData {
                             rs.getString("withdrawAccount"),
                             rs.getString("timestamp"),
                             BigDecimal.valueOf(rs.getDouble("amount")),
-                            rs.getString("currency")
+                            rs.getString("currency"),
+                            rs.getBoolean("fraudulent")
                     ));
 
                 return transactions;
@@ -178,17 +318,6 @@ public class BankData {
             log.error("Error getting transactions from SQL", e);
             return new ArrayList<>();
         }
-
-    }
-
-    /**
-     * Sanitise SQL string
-     *
-     * @param s String to sanitise
-     * @return Sanitised string
-     */
-    public String sanitiseSQL(String s) {
-        return s.replace("'", "''");
     }
 
     /**
@@ -205,13 +334,11 @@ public class BankData {
                     PreparedStatement pstmt = connection.prepareStatement("INSERT INTO accounts (id, name, balance, currency, accountType) VALUES (?, ?, ?, ?, ?)");
 
                     pstmt.setString(1, acc.getId());
-                    pstmt.setString(2, sanitiseSQL(acc.getName()));
-                    pstmt.setDouble(3, acc.getBalance());
+                    pstmt.setString(2, acc.getName());
+                    pstmt.setDouble(3, acc.getBalance().doubleValue());
                     pstmt.setString(4, acc.getCurrency());
                     pstmt.setString(5, acc.getAccountType());
-
                     pstmt.executeUpdate();
-
                 }
             }
         } catch (SQLException e) {
@@ -227,17 +354,18 @@ public class BankData {
     public void storeTransactionsSQL(ArrayList<Transaction> transactions) {
         try (Connection connection = ds.getConnection()) {
             try (Statement stmt = connection.createStatement()) {
-                stmt.execute("CREATE TABLE IF NOT EXISTS transactions (id VARCHAR(36) PRIMARY KEY, depositAccount VARCHAR(36), withdrawAccount VARCHAR(36), timestamp VARCHAR(255), amount DOUBLE, currency VARCHAR(3))");
+                stmt.execute("CREATE TABLE IF NOT EXISTS transactions (id VARCHAR(36) PRIMARY KEY, depositAccount VARCHAR(36), withdrawAccount VARCHAR(36), timestamp VARCHAR(255), amount DOUBLE, currency VARCHAR(3), fraudulent BOOLEAN)");
                 for (Transaction t : transactions) {
 
-                    PreparedStatement pstmt = connection.prepareStatement("INSERT INTO transactions (id, depositAccount, withdrawAccount, timestamp, amount, currency) VALUES (?, ?, ?, ?, ?, ?)");
+                    PreparedStatement pstmt = connection.prepareStatement("INSERT INTO transactions (id, depositAccount, withdrawAccount, timestamp, amount, currency, fraudulent) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
                     pstmt.setString(1, t.getId());
                     pstmt.setString(2, t.getDepositAccount());
                     pstmt.setString(3, t.getWithdrawAccount());
                     pstmt.setString(4, t.getTimestamp());
-                    pstmt.setDouble(5, t.getAmount());
+                    pstmt.setDouble(5, t.getAmount().doubleValue());
                     pstmt.setString(6, t.getCurrency());
+                    pstmt.setBoolean(7, t.isFraudulent());
 
                     pstmt.executeUpdate();
 

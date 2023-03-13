@@ -27,7 +27,7 @@ public class BankAPIController {
     @Produces("application/json")
     @GET("/accounts/{id}")
     public String getAccount(@PathParam String id) {
-        return "{}"; // TODO: Implement (returns account matching id & all relevant transactions)
+        return new Gson().toJson(data.getAccount(id)); // TODO: Return transactions associated with account
     }
 
     @Produces("application/json")
@@ -39,7 +39,7 @@ public class BankAPIController {
     @Produces("application/json")
     @GET("/transactions/{id}")
     public String getTransaction(@PathParam String id) {
-        return "{}"; // TODO: Implement (returns transaction matching id)
+        return new Gson().toJson(data.getTransaction(id));
     }
 
 }
