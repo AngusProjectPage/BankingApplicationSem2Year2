@@ -24,7 +24,7 @@ public class BankExportControllerTests {
         Transaction t = new Transaction("99999999-9999-9999-9999-999999999999", "00000000-0000-0000-0000-000000000000", "11111111-1111-1111-1111-111111111111", "2020-01-01T00:00:00Z", BigDecimal.valueOf(123.45), "GBP", false);
 
         String[] accountHeaders = {"id", "name", "balance", "currency", "accountType"};
-        String[] transactionHeaders = {"id", "depositAccount", "withdrawAccount", "timestamp", "amount", "currency"};
+        String[] transactionHeaders = {"id", "depositAccount", "withdrawAccount", "timestamp", "amount", "currency", "fraudulent"};
 
         String[] expAccountHeaders = bankExportController.getHeaders(new JSONArray("[" + new Gson().toJson(a) + "]"));
         String[] expTransactionHeaders = bankExportController.getHeaders(new JSONArray("[" + new Gson().toJson(t) + "]"));
