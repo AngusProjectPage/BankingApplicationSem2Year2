@@ -251,6 +251,7 @@ public class BankData {
             } else if(jsonResponse.getStatus() == 400) {
                 System.out.println("An error has occurred");
             } else {
+                System.out.println(jsonResponse.getStatus());
                 System.out.println("Bank not found");
             }
         }
