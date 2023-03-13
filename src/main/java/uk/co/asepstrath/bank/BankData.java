@@ -353,14 +353,17 @@ public class BankData {
                 stmt.execute("CREATE TABLE IF NOT EXISTS accounts (id VARCHAR(36) PRIMARY KEY, name VARCHAR(255), balance DOUBLE, currency VARCHAR(3), accountType VARCHAR(255))");
                 for (Account acc : accs) {
 
-                    PreparedStatement pstmt = connection.prepareStatement("INSERT INTO accounts (id, name, balance, currency, accountType) VALUES (?, ?, ?, ?, ?)");
+                    try (PreparedStatement pstmt = connection.prepareStatement("INSERT INTO accounts (id, name, balance, currency, accountType) VALUES (?, ?, ?, ?, ?)")) {
+                        pstmt.setString(1, acc.getId());
+                        pstmt.setString(2, acc.getName());
+                        pstmt.setDouble(3, acc.getBalance().doubleValue());
+                        pstmt.setString(4, acc.getCurrency());
+                        pstmt.setString(5, acc.getAccountType());
+                        pstmt.executeUpdate();
+                    } catch (SQLException e) {
+                        log.error("Error inserting account into SQL", e);
+                    }
 
-                    pstmt.setString(1, acc.getId());
-                    pstmt.setString(2, acc.getName());
-                    pstmt.setDouble(3, acc.getBalance().doubleValue());
-                    pstmt.setString(4, acc.getCurrency());
-                    pstmt.setString(5, acc.getAccountType());
-                    pstmt.executeUpdate();
                 }
             }
         } catch (SQLException e) {
@@ -379,17 +382,18 @@ public class BankData {
                 stmt.execute("CREATE TABLE IF NOT EXISTS transactions (id VARCHAR(36) PRIMARY KEY, depositAccount VARCHAR(36), withdrawAccount VARCHAR(36), timestamp VARCHAR(255), amount DOUBLE, currency VARCHAR(3), fraudulent BOOLEAN)");
                 for (Transaction t : transactions) {
 
-                    PreparedStatement pstmt = connection.prepareStatement("INSERT INTO transactions (id, depositAccount, withdrawAccount, timestamp, amount, currency, fraudulent) VALUES (?, ?, ?, ?, ?, ?, ?)");
-
-                    pstmt.setString(1, t.getId());
-                    pstmt.setString(2, t.getDepositAccount());
-                    pstmt.setString(3, t.getWithdrawAccount());
-                    pstmt.setString(4, t.getTimestamp());
-                    pstmt.setDouble(5, t.getAmount().doubleValue());
-                    pstmt.setString(6, t.getCurrency());
-                    pstmt.setBoolean(7, t.isFraudulent());
-
-                    pstmt.executeUpdate();
+                    try (PreparedStatement pstmt = connection.prepareStatement("INSERT INTO transactions (id, depositAccount, withdrawAccount, timestamp, amount, currency, fraudulent) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
+                        pstmt.setString(1, t.getId());
+                        pstmt.setString(2, t.getDepositAccount());
+                        pstmt.setString(3, t.getWithdrawAccount());
+                        pstmt.setString(4, t.getTimestamp());
+                        pstmt.setDouble(5, t.getAmount().doubleValue());
+                        pstmt.setString(6, t.getCurrency());
+                        pstmt.setBoolean(7, t.isFraudulent());
+                        pstmt.executeUpdate();
+                    } catch (SQLException e) {
+                        log.error("Error inserting transaction into SQL", e);
+                    }
 
                 }
             }
