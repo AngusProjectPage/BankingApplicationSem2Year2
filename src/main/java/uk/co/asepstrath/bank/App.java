@@ -30,7 +30,12 @@ public class App extends Jooby {
         DataSource ds = require(DataSource.class);
         Logger log = getLog();
 
-        mvc(new BankController(ds, log));
+        BankData data = new BankData(ds, log);
+        data.initialise();
+
+        mvc(new BankController(data));
+        mvc(new BankAPIController(data));
+        mvc(new BankExportController());
 
         /*
         Finally we register our application lifecycle methods
