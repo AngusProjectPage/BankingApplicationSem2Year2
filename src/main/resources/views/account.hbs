@@ -34,6 +34,32 @@ greys: #FFF, #EEE, #333, #222
 
 
 /* GENERAL STYLES */
+:root {
+
+    --base: #fff;
+    --secondary: #f5f7f8;
+    --highlight: #1a7b99;
+
+    --primary-color: #a5d8ffp;
+    --white: #fff;
+    --light-grey: #eee;
+    --mid-grey: #333;
+    --dark-grey: #222;
+
+    --8px: 8.19px;
+    --10px: 10.24px;
+    --12px: 12.80px;
+    --16px: 16.00px;
+    --20px: 20.00px;
+    --25px: 25.00px;
+    --31px: 31.25px;
+    --39px: 39.06px;
+    --48px: 76.29px;
+    --61px: 61.04px;
+    --76px: 48.83px;
+}
+
+/* GENERAL STYLES */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -44,21 +70,28 @@ html {
     font-size: 62.5%;
     font-family: 'Roboto', sans-serif;
     cursor: default;
+    background-color: var(--dark-grey);
 }
 
 body {
-    background-color: #EEE;
+    background-color: var(--dark-grey);
 }
 
 h1 {
-    font-size: 3.906rem;
+    font-size: 6rem;
     font-weight: 700;
-    color: #222;
+    color: var(--light-grey);
+    text-align: center;
 }
 
 h2 {
-    font-size: 2.5rem;
+    margin-top: 1vh;
+    font-size: 3.5rem;
     font-weight: 500;
+    color: var(--light-grey);
+    padding: 0.5em 0px 0.25em 0px;
+    text-align: center;
+    width: 100%;
 }
 
 .main-header {
@@ -67,98 +100,136 @@ h2 {
 }
 
 .secondary-header {
-    font-size: 3.1rem;
-    color: #333;
+    font-size: 4.5rem;
+
+    margin-top: 1em;
+    color: var(--light-grey);
 }
 
-.container {
-    max-width: 1000px;
+main {
+    max-width: 95vw;
+    height: 85vh;
     margin: 0 auto;
 }
 /* END OF GENERAL STYLES */
 
-.grid{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 2rem;
-    row-gap: 4rem;
-    color: #fff;
+.container {
+    width: 100%;
+    height: 100%;
+    background-color: var(--mid-grey);
+    align-items: center;
+    border-radius: 10px;
 }
 
-.balance-box {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    background-color: #74c0fc;
-    border-radius: 5px;
-    padding: 3rem 0 11rem 0rem;
-    color: #222;
+.container div {
+    width: 100%;
+    height: 20vh;
+    color: var(--dark-grey);
 }
 
 .amount {
-    margin-top: 10px;
+    overflow: hidden;
+    text-align: center;
+    font-size: 2.4rem;
+    padding: 0.5em 2em 1em 2em;
     border-radius: 5px;
     font-weight: 500;
-    font-size: 2rem;
-    padding: 2rem 9rem;
-    background-color: #fff;
+    width: 95%;
+    margin-left:2.5%;
+    height: 2.5em;
+    background-color: #3a3a3a;
+    color: var(--light-grey);
 }
 
-.grid:nth-child(2) {
-    grid-column: 2;
-}
+        nav {
+            border-bottom: 2px solid var(--mid-grey);
+        }
+
+        nav ul {
+            display: inline-block;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: var(--dark-grey);
+        }
+
+        nav li {
+            display: inline-block;
+            float: left;
+            padding: 0 16px;
+            background-color: var(--dark-grey);
+            border-right: 2px solid var(--mid-grey);
+        }
+
+        nav li:hover {
+            background-color: var(--light-grey);
+        }
+
+        nav li a {
+            display: block;
+            color: var(--light-grey);
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: var(--25px);
+        }
+
+        nav li a:hover {
+            color: var(--dark-grey);
+            text-decoration: none;
+        }
+
+        nav div {
+            display: inline-block;
+            float:right;
+            margin-right:20px;
+            background-color: var(--primary-color);
+        }
+
+        nav div:hover {
+            background-color: var(--highlight);
+        }
+
+        nav div a {
+            display: inline-block;
+            color: var(--light-grey);
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: var(--25px);
+        }
+
+        nav div a:hover {
+            display: inline-block;
+            color: var(--light-grey);
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: var(--25px);
+        }
 </style>
 </head>
 <body>
-<main class="container">
-    <h1 class="main-header">Account Info</h1>
-    <div class="container">
-        {{#with account}}
-            <h2 class="secondary-header">Account: {{id}}</h2>
-            <h2 class="secondary-header">Name: {{name}}</h2>
-            <h2 class="secondary-header">Currency: {{currency}}</h2>
-            <h2 class="secondary-header">Account Type: {{accountType}}</h2>
-        {{/with}}
-    </div>
+<nav>
+    <ul>
+        <li><a href="home" >Home</a></li>
+        <li><a href="accounts">Accounts</a></li>
+        <li><a href="transactions">Transactions</a></li>
+    </ul>
 
-    <h1 class="main-header">Transaction Info</h1>
-    <div class="grid">
-        {{#with transactionInfo}}
-        <div class="balance-box"><h2 class="sub-header">Initial Balance</h2> <p class="amount">{{balanceBefore}}</p></div>
-        <div class="balance-box"><h2 class="sub-header">Current Balance</h2><p class="amount">{{balanceAfter}}</p></div>
-        <div class="balance-box"><h2 class="sub-header">Successful Transactions</h2><p class="amount">{{numTransactions}}</p></div>
-        <div class="balance-box"><h2 class="sub-header">Failed Transactions</h2><p class="amount">{{failedTransactions}}</p></div>
-        {{/with}}
+    <div>
+        <a href="#">Export</a>
     </div>
+</nav>
 
-    <h1 class="main-header">Transactions</h1>
+<main>
+    <h2 class="secondary-header">Account: {{TransactionInfo.id}}</h2>
     <div class="container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Deposit Acc.</th>
-                    <th>Withdraw Acc.</th>
-                    <th>Timestamp</th>
-                    <th>Amount</th>
-                    <th>Currency</th>
-                    <th>Fraudulent</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#transactions}}
-                <tr>
-                    <td>{{id}}</td>
-                    <td><a href="accounts/{{depositAccount}}">{{depositAccount}}</a></td>
-                    <td><a href="accounts/{{depositAccount}}">{{withdrawAccount}}</a></td>
-                    <td>{{timestamp}}</td>
-                    <td>{{amount}}</td>
-                    <td>{{currency}}</td>
-                    <td>{{fraudulent}}</td>
-                </tr>
-                {{/transactions}}
-            </tbody>
-        </table>
+        <div><h2 class="sub-header">Initial Balance</h2><p class="amount">{{TransactionInfo.balanceBefore}}</p></div>
+        <div><h2 class="sub-header">Current Balance</h2><p class="amount">{{TransactionInfo.balanceAfter}}</p></div>
+        <div><h2 class="sub-header">Successful Transactions</h2><p class="amount">{{TransactionInfo.numTransactions}}</p></div>
+        <div><h2 class="sub-header">Failed Transactions</h2><p class="amount">{{TransactionInfo.failedTransactions}}</p></div>#
     </div>
 </main>
 </body>
