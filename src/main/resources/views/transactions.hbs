@@ -196,7 +196,7 @@ nav div a:hover {
     </ul>
 
     <div>
-        <a href="#">Export</a>
+        <a href="/export/transactions">Export</a>
     </div>
 </nav>
 
@@ -219,8 +219,8 @@ nav div a:hover {
             {{#transactions}}
                 <tr>
                     <td class="id">{{id}}</td>
-                    <td class="de-acc" ><a href="?id={{depositAccount}}">{{depositAccount}}</a></td>
-                    <td class="wit-acc" ><a href="?id={{withdrawAccount}}">{{withdrawAccount}}</a></td>
+                    <td class="de-acc" ><a href="/accounts/{{depositAccount}}">{{depositAccount}}</a></td>
+                    <td class="wit-acc" ><a href="/accounts/{{withdrawAccount}}">{{withdrawAccount}}</a></td>
                     <td class="time" >{{timestamp}}</td>
                     <td class="amm" >{{amount}}</td>
                     <td class="cur" >{{currency}}</td>
