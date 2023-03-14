@@ -32,9 +32,4 @@ public class BankController {
         return new ModelAndView("transaction.hbs", data.getTransaction(id));
     }
 
-    @GET ("/home")
-    public ModelAndView viewHome () {
-        return new ModelAndView("home.hbs");
-    }
-
 }
