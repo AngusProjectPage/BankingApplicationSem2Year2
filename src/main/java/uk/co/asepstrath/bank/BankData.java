@@ -263,14 +263,14 @@ public class BankData {
 
     public ArrayList<TransactionInfo> applyAllTransactions(ArrayList<Account> accounts, ArrayList<Transaction> allTransactions, ArrayList<TransactionInfo> transactionInfo) {
 
-        Account withdrawAccount = null;
-        Account depositAccount = null;
-
         // Sort transactions by timestamp
         Comparator<Transaction> timeStampComparator = Comparator.comparing(Transaction::getTimestamp);
         allTransactions.sort(timeStampComparator);
         // Find account associated with each transaction
         for (Transaction t : allTransactions) {
+            Account withdrawAccount = null;
+            Account depositAccount = null;
+
             for (Account a : accounts) {
                 if (a.getId().equals(t.getWithdrawAccount())) {
                     withdrawAccount = a;
