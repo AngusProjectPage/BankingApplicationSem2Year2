@@ -43,8 +43,8 @@ greys: #FFF, #EEE, #333, #222
     --primary-color: #a5d8ffp;
     --white: #fff;
     --light-grey: #eee;
-    --mid-grey: #333;
-    --dark-grey: #222;
+    --mid-grey: #555;
+    --dark-grey: #333;
 
     --8px: 8.19px;
     --10px: 10.24px;
@@ -127,6 +127,7 @@ main {
 }
 /* END OF GENERAL STYLES */
 
+/*
 .container {
     width: 100%;
     height: 45vh;
@@ -134,10 +135,25 @@ main {
     align-items: center;
     border-radius: 10px;
 }
+*/
+
+.sub-header {
+    margin-bottom: 5px;
+    padding: 0;
+}
+
+.infoBox {
+    display: flex;
+    flex-direction: column;
+    background-color: grey;
+    border-radius: 5px;
+    margin-bottom: 40px;
+    padding-bottom: 5px;
+    gap: 5px;
+    background-color: var(--mid-grey);
+}
 
 .container div {
-    width: 100%;
-    height: 10vh;
     color: var(--dark-grey);
 }
 
@@ -253,15 +269,15 @@ main {
     <h1 class="main-header">Account Info</h1>
     <div class="account-details">
         {{#with account}}
-            <h2 class="sub-header" style="font-size: var(--16px)">Account: {{id}}</h2>
-            <h2 class="sub-header">Name: {{name}}</h2>
-            <h2 class="sub-header">Currency: {{currency}}</h2>
-            <h2 class="sub-header">Account Type: {{accountType}}</h2>
+            <h2 style="font-size: var(--16px)">Account: {{id}}</h2>
+            <h2>Name: {{name}}</h2>
+            <h2>Currency: {{currency}}</h2>
+            <h2>Account Type: {{accountType}}</h2>
         {{/with}}
     </div>
 
     <h1 class="main-header">Transaction Info</h1>
-    <div class="container">
+    <div class="container infoBox">
         {{#with transactionInfo}}
         <div><h2 class="sub-header">Initial Balance</h2><p class="amount">{{balanceBefore}}</p></div>
         <div><h2 class="sub-header">Current Balance</h2><p class="amount">{{balanceAfter}}</p></div>
