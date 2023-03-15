@@ -17,8 +17,8 @@ public class TransactionInfo {
         failedTransactions = 0;
     }
     public String getId() {return id;}
-    public BigDecimal getBalanceBefore() { return balanceBefore.setScale(2, BigDecimal.ROUND_HALF_EVEN);}
-    public BigDecimal getBalanceAfter() { return balanceAfter.setScale(2, BigDecimal.ROUND_HALF_EVEN); }
+    public BigDecimal getBalanceBefore() { return balanceBefore;}
+    public BigDecimal getBalanceAfter() { return balanceAfter; }
     public int getNumTransactions() { return numTransactions; }
     public int getFailedTransactions() { return failedTransactions; }
     public void updateTransactionCount() {

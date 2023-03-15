@@ -45,6 +45,15 @@ class BankControllerTests extends Jooby {
     }
 
     @Test
+    @DisplayName("View Account")
+    void viewAccount() {
+        BankController bankController = new BankController(data);
+        ModelAndView mav = bankController.viewAccount("0126169a-2719-4ab2-8934-2b1fa33ec62e"); // arbitrary account, Evan Padberg
+        Assertions.assertNotNull(mav.getModel().get("account"));
+        Assertions.assertNotNull(mav.getModel().get("dataOrigin"));
+    }
+
+    @Test
     @DisplayName("View Transactions")
     void viewTransactions() {
         BankController bankController = new BankController(data);
@@ -54,4 +63,12 @@ class BankControllerTests extends Jooby {
         Assertions.assertNotNull(mav.getModel().get("dataOrigin"));
     }
 
+    @Test
+    @DisplayName("View Transaction")
+    void viewTransaction() {
+        BankController bankController = new BankController(data);
+        ModelAndView mav = bankController.viewTransaction("00059383-04c5-42ff-bfcc-1c3f88d55644"); // arbitrary transaction
+        Assertions.assertNotNull(mav.getModel().get("transaction"));
+        Assertions.assertNotNull(mav.getModel().get("dataOrigin"));
+    }
 }
