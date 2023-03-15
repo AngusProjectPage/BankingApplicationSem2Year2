@@ -7,7 +7,7 @@
     <link href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
     <link href="https://cdn.datatables.net/1.13.3/css/dataTables.bootstrap4.min.css">
-    <title>TransactionInfo</title>
+    <title>Account</title>
     <style>
         /* TYPOGRAPHY SCALE */
 /*
@@ -129,7 +129,7 @@ main {
 
 .container {
     width: 100%;
-    height: 100%;
+    height: 45vh;
     background-color: var(--mid-grey);
     align-items: center;
     border-radius: 10px;
@@ -137,7 +137,7 @@ main {
 
 .container div {
     width: 100%;
-    height: 20vh;
+    height: 10vh;
     color: var(--dark-grey);
 }
 
@@ -222,6 +222,17 @@ main {
             text-decoration: none;
             font-size: var(--25px);
         }
+
+        .account-details {
+            opacity: 80%;
+            padding-bottom: 2vh;
+        }
+
+        .account-details h2{
+            font-size: var(--20px);
+            color: var(--light-grey);
+            opacity: 80%;
+        }
 </style>
 </head>
 <body>
@@ -240,9 +251,9 @@ main {
 <main>
     {{#if account}}
     <h1 class="main-header">Account Info</h1>
-    <div>
+    <div class="account-details">
         {{#with account}}
-            <h2 class="sub-header">Account: {{id}}</h2>
+            <h2 class="sub-header" style="font-size: var(--16px)">Account: {{id}}</h2>
             <h2 class="sub-header">Name: {{name}}</h2>
             <h2 class="sub-header">Currency: {{currency}}</h2>
             <h2 class="sub-header">Account Type: {{accountType}}</h2>
@@ -269,7 +280,7 @@ main {
                 <th class="de-acc" scope="col">Deposit Acc.</th>
                 <th class="wit-acc" scope="col">Withdraw Acc.</th>
                 <th class="time" scope="col">Timestamp</th>
-                <th class="amm" scope="col">Ammount</th>
+                <th class="amm" scope="col">Amount</th>
                 <th class="cur" scope="col">Currency</th>
                 <th class="fra" scope="col">Fraudulent</th>
             </tr>
@@ -293,9 +304,7 @@ main {
         <h1 class="main-header">Account Not Found</h1>
     {{/if}}
 
-    <footer class="py-3 my-3">
-        <p class="text-center text-muted">({{dataOrigin}})</p>
-    </footer>
+
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -308,10 +317,14 @@ main {
             $('#table').DataTable({
                 "pageLength": 20,
                 "searching": false,
-                "lengthChange": false
+                "lengthChange": false,
+                "sDom": '<"row view-filter"<"col-sm-12"<"pull-left"l><"pull-right"f><"clearfix">>>t<"row view-pager"<"col-sm-12"<"text-center"ip>>>'
             });
         } );
     </script>
+    <footer class="py-3 my-3">
+        <p class="text-center text-muted">({{dataOrigin}})</p>
+    </footer>
 </main>
 </body>
 </html>
