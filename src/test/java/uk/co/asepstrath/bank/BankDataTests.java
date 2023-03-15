@@ -71,6 +71,8 @@ class BankDataTests {
         Assertions.assertEquals(BigDecimal.valueOf(678.9), r.get(1).getBalance());
         Assertions.assertEquals("USD", r.get(1).getCurrency());
         Assertions.assertEquals("Investment Account", r.get(1).getAccountType());
+
+        MockClient.clear();
     }
 
     @Test
@@ -194,6 +196,7 @@ class BankDataTests {
         Assertions.assertEquals("USD", r.get(1).getCurrency());
         Assertions.assertTrue(r.get(1).isFraudulent());
 
+        MockClient.clear();
     }
 
     @Test
