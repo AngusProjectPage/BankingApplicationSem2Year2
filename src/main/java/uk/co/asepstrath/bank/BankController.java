@@ -12,6 +12,11 @@ public class BankController {
         this.data = data;
     }
 
+    @GET
+    public ModelAndView viewHome() {
+        return new ModelAndView("home.hbs");
+    }
+
     @GET("/accounts")
     public ModelAndView viewAccounts() {
        return new ModelAndView("accounts.hbs", data.getAccounts());
@@ -30,11 +35,6 @@ public class BankController {
     @GET ("/transactions/{id}")
     public ModelAndView viewTransaction(@PathParam String id) {
         return new ModelAndView("transaction.hbs", data.getTransaction(id));
-    }
-
-    @GET ("/home")
-    public ModelAndView viwHome() {
-        return new ModelAndView("home.hbs");
     }
 
 }

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <title>TransactionInfo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+    <link href="https://cdn.datatables.net/1.13.3/css/dataTables.bootstrap4.min.css">
+    <title>Account</title>
     <style>
         /* TYPOGRAPHY SCALE */
 /*
@@ -66,6 +66,20 @@ greys: #FFF, #EEE, #333, #222
     padding: 0;
 }
 
+tr {
+    max-height: 2em;
+}
+
+th {
+    overflow: hidden;
+    color: var(--light-grey);
+}
+
+td {
+    overflow: hidden;
+    color: var(--light-grey);
+}
+
 html {
     font-size: 62.5%;
     font-family: 'Roboto', sans-serif;
@@ -115,7 +129,7 @@ main {
 
 .container {
     width: 100%;
-    height: 100%;
+    height: 45vh;
     background-color: var(--mid-grey);
     align-items: center;
     border-radius: 10px;
@@ -123,7 +137,7 @@ main {
 
 .container div {
     width: 100%;
-    height: 20vh;
+    height: 10vh;
     color: var(--dark-grey);
 }
 
@@ -208,29 +222,109 @@ main {
             text-decoration: none;
             font-size: var(--25px);
         }
+
+        .account-details {
+            opacity: 80%;
+            padding-bottom: 2vh;
+        }
+
+        .account-details h2{
+            font-size: var(--20px);
+            color: var(--light-grey);
+            opacity: 80%;
+        }
 </style>
 </head>
 <body>
 <nav>
     <ul>
-        <li><a href="home" >Home</a></li>
-        <li><a href="accounts">Accounts</a></li>
-        <li><a href="transactions">Transactions</a></li>
+        <li><a href="/" >Home</a></li>
+        <li><a href="/accounts">Accounts</a></li>
+        <li><a href="/transactions">Transactions</a></li>
     </ul>
 
     <div>
-        <a href="#">Export</a>
+        <a href="/export/accounts/{{account.id}}">Export</a>
     </div>
 </nav>
 
 <main>
-    <h2 class="secondary-header">Account: {{TransactionInfo.id}}</h2>
-    <div class="container">
-        <div><h2 class="sub-header">Initial Balance</h2><p class="amount">{{TransactionInfo.balanceBefore}}</p></div>
-        <div><h2 class="sub-header">Current Balance</h2><p class="amount">{{TransactionInfo.balanceAfter}}</p></div>
-        <div><h2 class="sub-header">Successful Transactions</h2><p class="amount">{{TransactionInfo.numTransactions}}</p></div>
-        <div><h2 class="sub-header">Failed Transactions</h2><p class="amount">{{TransactionInfo.failedTransactions}}</p></div>#
+    {{#if account}}
+    <h1 class="main-header">Account Info</h1>
+    <div class="account-details">
+        {{#with account}}
+            <h2 class="sub-header" style="font-size: var(--16px)">Account: {{id}}</h2>
+            <h2 class="sub-header">Name: {{name}}</h2>
+            <h2 class="sub-header">Currency: {{currency}}</h2>
+            <h2 class="sub-header">Account Type: {{accountType}}</h2>
+        {{/with}}
     </div>
+
+    <h1 class="main-header">Transaction Info</h1>
+    <div class="container">
+        {{#with transactionInfo}}
+        <div><h2 class="sub-header">Initial Balance</h2><p class="amount">{{balanceBefore}}</p></div>
+        <div><h2 class="sub-header">Current Balance</h2><p class="amount">{{balanceAfter}}</p></div>
+        <div><h2 class="sub-header">Successful Transactions</h2><p class="amount">{{numTransactions}}</p></div>
+        <div><h2 class="sub-header">Failed Transactions</h2><p class="amount">{{failedTransactions}}</p></div>
+        {{/with}}
+    </div>
+
+    <br>
+
+    <div>
+        <table id="table" class="display table table-striped table-bordered"> <!-- Create Table -->
+            <thead class="table-dark">
+            <tr>
+                <th class="id" scope="col">ID</th>
+                <th class="de-acc" scope="col">Deposit Acc.</th>
+                <th class="wit-acc" scope="col">Withdraw Acc.</th>
+                <th class="time" scope="col">Timestamp</th>
+                <th class="amm" scope="col">Amount</th>
+                <th class="cur" scope="col">Currency</th>
+                <th class="fra" scope="col">Fraudulent</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#transactions}}
+                <tr>
+                    <td class="id">{{id}}</td>
+                    <td class="de-acc" ><a href="/accounts/{{depositAccount}}">{{depositAccount}}</a></td>
+                    <td class="wit-acc" ><a href="/accounts/{{withdrawAccount}}">{{withdrawAccount}}</a></td>
+                    <td class="time" >{{timestamp}}</td>
+                    <td class="amm" >{{amount}}</td>
+                    <td class="cur" >{{currency}}</td>
+                    <td class="fra" >{{fraudulent}}</td>
+                </tr>
+            {{/transactions}}
+            </tbody>
+        </table>
+    </div>
+    {{else}}
+        <h1 class="main-header">Account Not Found</h1>
+    {{/if}}
+
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.3/js/dataTables.bootstrap4.min.js"></script>
+
+    <script>
+        $(document).ready( function () {
+            $('#table').DataTable({
+                "pageLength": 20,
+                "searching": false,
+                "lengthChange": false,
+                "sDom": '<"row view-filter"<"col-sm-12"<"pull-left"l><"pull-right"f><"clearfix">>>t<"row view-pager"<"col-sm-12"<"text-center"ip>>>'
+            });
+        } );
+    </script>
+    <footer class="py-3 my-3">
+        <p class="text-center text-muted">({{dataOrigin}})</p>
+    </footer>
 </main>
 </body>
 </html>

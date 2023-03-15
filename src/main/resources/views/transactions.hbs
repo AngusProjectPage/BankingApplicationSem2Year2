@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
     <link href="https://cdn.datatables.net/1.13.3/css/dataTables.bootstrap4.min.css">
 
-    <title>TransactionInfo</title>
+    <title>Bank Transactions</title>
     <style>
         /* TYPOGRAPHY SCALE */
 /*
@@ -190,13 +190,13 @@ nav div a:hover {
 <body>
 <nav class="top-nav">
     <ul>
-        <li><a href="home">Home</a></li>
-        <li><a href="accounts">Accounts</a></li>
-        <li><a href="transactions">Transactions</a></li>
+        <li><a href="/">Home</a></li>
+        <li><a href="/accounts">Accounts</a></li>
+        <li><a href="/transactions">Transactions</a></li>
     </ul>
 
     <div>
-        <a href="#">Export</a>
+        <a href="/export/transactions">Export</a>
     </div>
 </nav>
 
@@ -219,8 +219,8 @@ nav div a:hover {
             {{#transactions}}
                 <tr>
                     <td class="id">{{id}}</td>
-                    <td class="de-acc" ><a href="?id={{depositAccount}}">{{depositAccount}}</a></td>
-                    <td class="wit-acc" ><a href="?id={{withdrawAccount}}">{{withdrawAccount}}</a></td>
+                    <td class="de-acc" ><a href="/accounts/{{depositAccount}}">{{depositAccount}}</a></td>
+                    <td class="wit-acc" ><a href="/accounts/{{withdrawAccount}}">{{withdrawAccount}}</a></td>
                     <td class="time" >{{timestamp}}</td>
                     <td class="amm" >{{amount}}</td>
                     <td class="cur" >{{currency}}</td>
